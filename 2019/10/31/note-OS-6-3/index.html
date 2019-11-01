@@ -50,17 +50,20 @@
   };
 </script>
 
-  <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+  <meta name="description" content="Peterson’s SolutionPeterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。 以下程式碼中，用i, j兩個變數來表示兩個不同的process。 兩個process的共用變數12int turn;boo">
+<meta name="keywords" content="Process Synchronization,Operating System">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;10&#x2F;30&#x2F;hello-world&#x2F;index.html">
+<meta property="og:title" content="Note-OS-6.3 Perterson&#39;s Solution">
+<meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;10&#x2F;31&#x2F;note-OS-6-3&#x2F;index.html">
 <meta property="og:site_name" content="weifang&#39;s note">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta property="og:description" content="Peterson’s SolutionPeterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。 以下程式碼中，用i, j兩個變數來表示兩個不同的process。 兩個process的共用變數12int turn;boo">
 <meta property="og:locale" content="zh-TW">
-<meta property="og:updated_time" content="2019-10-29T16:29:42.797Z">
+<meta property="og:image" content="https:&#x2F;&#x2F;imgur.com&#x2F;d4Nheuh.jpg">
+<meta property="og:updated_time" content="2019-11-01T01:54:30.989Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;imgur.com&#x2F;d4Nheuh.jpg">
 
-<link rel="canonical" href="http://rweifang.github.io/2019/10/30/hello-world/">
+<link rel="canonical" href="http://rweifang.github.io/2019/10/31/note-OS-6-3/">
 
 
 <script id="page-configurations">
@@ -74,7 +77,7 @@
   };
 </script>
 
-  <title>Hello World | weifang's note</title>
+  <title>Note-OS-6.3 Perterson's Solution | weifang's note</title>
   
 
 
@@ -188,7 +191,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/10/30/hello-world/">
+    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/10/31/note-OS-6-3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -201,7 +204,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Hello World
+          Note-OS-6.3 Perterson's Solution
         </h1>
 
         <div class="post-meta">
@@ -211,7 +214,25 @@
               </span>
               <span class="post-meta-item-text">發表於</span>
 
-              <time title="創建時間：2019-10-30 00:29:42" itemprop="dateCreated datePublished" datetime="2019-10-30T00:29:42+08:00">2019-10-30</time>
+              <time title="創建時間：2019-10-31 23:44:37" itemprop="dateCreated datePublished" datetime="2019-10-31T23:44:37+08:00">2019-10-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2019-11-01 09:54:30" itemprop="dateModified" datetime="2019-11-01T09:54:30+08:00">2019-11-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Operating-System/" itemprop="url" rel="index">
+                    <span itemprop="name">Operating System</span>
+                  </a>
+                </span>
             </span>
 
           
@@ -225,19 +246,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+        <h2 id="Peterson’s-Solution"><a href="#Peterson’s-Solution" class="headerlink" title="Peterson’s Solution"></a>Peterson’s Solution</h2><p>Peterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。</p>
+<p>以下程式碼中，用i, j兩個變數來表示兩個不同的process。</p>
+<h3 id="兩個process的共用變數"><a href="#兩個process的共用變數" class="headerlink" title="兩個process的共用變數"></a>兩個process的共用變數</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> turn;</span><br><span class="line">boolean flag[<span class="number">2</span>];</span><br></pre></td></tr></table></figure>
+<h3 id="Process-Pi-的程式碼"><a href="#Process-Pi-的程式碼" class="headerlink" title="Process Pi 的程式碼"></a>Process Pi 的程式碼</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    flag[i] = <span class="literal">true</span>;             <span class="comment">// request for critical-section</span></span><br><span class="line">    turn = j;                   <span class="comment">// give priority to another process</span></span><br><span class="line">    <span class="keyword">while</span> (flag[j] &amp;&amp; turn == j)</span><br><span class="line">        ;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// critical section</span></span><br><span class="line"></span><br><span class="line">        flag[i] = <span class="literal">false</span>;        <span class="comment">// cancel the request</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// remainder section</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Intruction-Reordering"><a href="#Intruction-Reordering" class="headerlink" title="Intruction Reordering"></a>Intruction Reordering</h3><p>Reordering 調整了Load, Store的順序。下圖可以看到在Peterson’s Solution中，如果做了Instruciton Reordering會導致兩個Process一起進入Critical Section。<br><img src="https://imgur.com/d4Nheuh.jpg" alt="Alt text" title="The effect of instruction reordering in Peterson&#39;s solution"></p>
 
     </div>
 
@@ -246,19 +259,23 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Process-Synchronization/" rel="tag"># Process Synchronization</a>
+              <a href="/tags/Operating-System/" rel="tag"># Operating System</a>
+          </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
+                <a href="/2019/10/30/hello-world/" rel="next" title="Hello World">
+                  <i class="fa fa-chevron-left"></i> Hello World
+                </a>
             </div>
 
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-                <a href="/2019/10/31/note-OS-6-3/" rel="prev" title="Note-OS-6.3 Perterson's Solution">
-                  Note-OS-6.3 Perterson's Solution <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
       </footer>
@@ -297,7 +314,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Quick-Start"><span class="nav-number">1.</span> <span class="nav-text">Quick Start</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Create-a-new-post"><span class="nav-number">1.1.</span> <span class="nav-text">Create a new post</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Run-server"><span class="nav-number">1.2.</span> <span class="nav-text">Run server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Generate-static-files"><span class="nav-number">1.3.</span> <span class="nav-text">Generate static files</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deploy-to-remote-sites"><span class="nav-number">1.4.</span> <span class="nav-text">Deploy to remote sites</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Peterson’s-Solution"><span class="nav-number">1.</span> <span class="nav-text">Peterson’s Solution</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#兩個process的共用變數"><span class="nav-number">1.1.</span> <span class="nav-text">兩個process的共用變數</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Process-Pi-的程式碼"><span class="nav-number">1.2.</span> <span class="nav-text">Process Pi 的程式碼</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Intruction-Reordering"><span class="nav-number">1.3.</span> <span class="nav-text">Intruction Reordering</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
