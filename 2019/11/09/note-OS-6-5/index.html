@@ -50,15 +50,15 @@
   };
 </script>
 
-  <meta name="description" content="Mutex LocksMutex為Mutual exclusion的縮寫。Mutex Locks如同進入critical section的鑰匙，進入前需要先取得鑰匙，離開時釋出鑰匙。  ImplementationSolution to the critical-section problem using mutex Locks12345678910while (true)&amp;#123;    ac">
+  <meta name="description" content="Mutex LocksMutex為Mutual exclusion的縮寫。Mutex Locks如同進入critical section的鑰匙，進入前需要先取得鑰匙，離開時釋出鑰匙。">
 <meta name="keywords" content="Process Synchronization,Operating System">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Note-OS-6.5 Mutex Locks">
 <meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;11&#x2F;09&#x2F;note-OS-6-5&#x2F;index.html">
 <meta property="og:site_name" content="weifang&#39;s note">
-<meta property="og:description" content="Mutex LocksMutex為Mutual exclusion的縮寫。Mutex Locks如同進入critical section的鑰匙，進入前需要先取得鑰匙，離開時釋出鑰匙。  ImplementationSolution to the critical-section problem using mutex Locks12345678910while (true)&amp;#123;    ac">
+<meta property="og:description" content="Mutex LocksMutex為Mutual exclusion的縮寫。Mutex Locks如同進入critical section的鑰匙，進入前需要先取得鑰匙，離開時釋出鑰匙。">
 <meta property="og:locale" content="zh-TW">
-<meta property="og:updated_time" content="2019-11-09T14:27:13.450Z">
+<meta property="og:updated_time" content="2019-11-09T15:04:46.191Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://rweifang.github.io/2019/11/09/note-OS-6-5/">
@@ -213,7 +213,7 @@
               <span class="post-meta-item-text">發表於</span>
               
 
-              <time title="創建時間：2019-11-09 22:22:06 / 修改時間：22:27:13" itemprop="dateCreated datePublished" datetime="2019-11-09T22:22:06+08:00">2019-11-09</time>
+              <time title="創建時間：2019-11-09 22:22:06 / 修改時間：23:04:46" itemprop="dateCreated datePublished" datetime="2019-11-09T22:22:06+08:00">2019-11-09</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -252,7 +252,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Mutex-Locks"><a href="#Mutex-Locks" class="headerlink" title="Mutex Locks"></a>Mutex Locks</h1><p>Mutex為Mutual exclusion的縮寫。Mutex Locks如同進入critical section的鑰匙，進入前需要先取得鑰匙，離開時釋出鑰匙。 </p>
+        <h1 id="Mutex-Locks"><a href="#Mutex-Locks" class="headerlink" title="Mutex Locks"></a>Mutex Locks</h1><p>Mutex為Mutual exclusion的縮寫。Mutex Locks如同進入critical section的鑰匙，進入前需要先取得鑰匙，離開時釋出鑰匙。<br><a id="more"></a></p>
 <h2 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h2><p>Solution to the critical-section problem using mutex Locks<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">&#123;</span><br><span class="line">    acquire();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// critical section</span></span><br><span class="line"></span><br><span class="line">    release();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// remainder section</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>acquire(), release()都需要使用atomic operation。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">acquire()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span> (!availabe) </span><br><span class="line">        ;</span><br><span class="line">    avaliable = atomically_set_false();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">release()</span><br><span class="line">&#123;</span><br><span class="line">    avaliable = atomically_set_true();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h2 id="busy-waiting"><a href="#busy-waiting" class="headerlink" title="busy waiting"></a>busy waiting</h2><p>在先前的作法中，會在entry section使用while loop等待進入critical section，這種always true的while稱為busy waiting。busy waiting會使得系統資源的浪費，後續的篇章會使用sleep()避免busy waiting的發生。</p>

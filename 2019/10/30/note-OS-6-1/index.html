@@ -50,15 +50,15 @@
   };
 </script>
 
-  <meta name="description" content="Background我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。 Producer-Consumer ProblemProducer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：123456789">
+  <meta name="description" content="Background我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。 Producer-Consumer ProblemProducer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：">
 <meta name="keywords" content="Process Synchronization,Operating System">
 <meta property="og:type" content="article">
 <meta property="og:title" content="note-OS-6.1 Background">
 <meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;10&#x2F;30&#x2F;note-OS-6-1&#x2F;index.html">
 <meta property="og:site_name" content="weifang&#39;s note">
-<meta property="og:description" content="Background我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。 Producer-Consumer ProblemProducer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：123456789">
+<meta property="og:description" content="Background我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。 Producer-Consumer ProblemProducer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：">
 <meta property="og:locale" content="zh-TW">
-<meta property="og:updated_time" content="2019-11-09T14:30:25.988Z">
+<meta property="og:updated_time" content="2019-11-09T15:04:39.379Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://rweifang.github.io/2019/10/30/note-OS-6-1/">
@@ -219,7 +219,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2019-11-09 22:30:25" itemprop="dateModified" datetime="2019-11-09T22:30:25+08:00">2019-11-09</time>
+                <time title="修改時間：2019-11-09 23:04:39" itemprop="dateModified" datetime="2019-11-09T23:04:39+08:00">2019-11-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -259,7 +259,9 @@
 
       
         <h1 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h1><p>我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。</p>
-<h2 id="Producer-Consumer-Problem"><a href="#Producer-Consumer-Problem" class="headerlink" title="Producer-Consumer Problem"></a>Producer-Consumer Problem</h2><p>Producer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="comment">/* produce an item in next_produced */</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span> (count == BUFFER_SIZE)</span><br><span class="line">        ;</span><br><span class="line">    </span><br><span class="line">    buffer[in] = next_produced;</span><br><span class="line">    in = (in + <span class="number">1</span>) % BUFFER_SIZE;</span><br><span class="line">    count++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Producer-Consumer-Problem"><a href="#Producer-Consumer-Problem" class="headerlink" title="Producer-Consumer Problem"></a>Producer-Consumer Problem</h2><p>Producer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：</p>
+<a id="more"></a>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="comment">/* produce an item in next_produced */</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span> (count == BUFFER_SIZE)</span><br><span class="line">        ;</span><br><span class="line">    </span><br><span class="line">    buffer[in] = next_produced;</span><br><span class="line">    in = (in + <span class="number">1</span>) % BUFFER_SIZE;</span><br><span class="line">    count++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">while</span> (count == <span class="number">0</span>)</span><br><span class="line">        ;</span><br><span class="line">    </span><br><span class="line">    next_consumed = buffer[out];</span><br><span class="line">    out = (out + <span class="number">1</span>) % BUFFER_SIZE;</span><br><span class="line">    count--;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* consume the item in next_consumed */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>Producer中的<code>count++</code>會在硬體中表現為下列的式子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">register1 = count</span><br><span class="line">register1 = register1 + 1</span><br><span class="line">count = register1</span><br></pre></td></tr></table></figure></p>
 <p>Consumer中的<code>count--</code>會在硬體中表現為下列的式子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">register2 = count</span><br><span class="line">register2 = register2 - 1</span><br><span class="line">count = register2</span><br></pre></td></tr></table></figure></p>
