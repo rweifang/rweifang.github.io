@@ -50,20 +50,18 @@
   };
 </script>
 
-  <meta name="description" content="Peterson’s SolutionPeterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。 以下程式碼中，用i, j兩個變數來表示兩個不同的process。 兩個process的共用變數12int turn;boo">
+  <meta name="description" content="Background我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。 Producer-Consumer ProblemProducer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：123456789">
 <meta name="keywords" content="Process Synchronization,Operating System">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Note-OS-6.3 Perterson&#39;s Solution">
-<meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;10&#x2F;31&#x2F;note-OS-6-3&#x2F;index.html">
+<meta property="og:title" content="note-OS-6.1 Background">
+<meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;10&#x2F;30&#x2F;note-OS-6-1&#x2F;index.html">
 <meta property="og:site_name" content="weifang&#39;s note">
-<meta property="og:description" content="Peterson’s SolutionPeterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。 以下程式碼中，用i, j兩個變數來表示兩個不同的process。 兩個process的共用變數12int turn;boo">
+<meta property="og:description" content="Background我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。 Producer-Consumer ProblemProducer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：123456789">
 <meta property="og:locale" content="zh-TW">
-<meta property="og:image" content="https:&#x2F;&#x2F;imgur.com&#x2F;d4Nheuh.jpg">
-<meta property="og:updated_time" content="2019-11-01T01:54:30.989Z">
+<meta property="og:updated_time" content="2019-11-09T14:30:25.988Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;imgur.com&#x2F;d4Nheuh.jpg">
 
-<link rel="canonical" href="http://rweifang.github.io/2019/10/31/note-OS-6-3/">
+<link rel="canonical" href="http://rweifang.github.io/2019/10/30/note-OS-6-1/">
 
 
 <script id="page-configurations">
@@ -77,7 +75,7 @@
   };
 </script>
 
-  <title>Note-OS-6.3 Perterson's Solution | weifang's note</title>
+  <title>note-OS-6.1 Background | weifang's note</title>
   
 
 
@@ -191,7 +189,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/10/31/note-OS-6-3/">
+    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/10/30/note-OS-6-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -204,7 +202,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Note-OS-6.3 Perterson's Solution
+          note-OS-6.1 Background
         </h1>
 
         <div class="post-meta">
@@ -214,14 +212,14 @@
               </span>
               <span class="post-meta-item-text">發表於</span>
 
-              <time title="創建時間：2019-10-31 23:44:37" itemprop="dateCreated datePublished" datetime="2019-10-31T23:44:37+08:00">2019-10-31</time>
+              <time title="創建時間：2019-10-30 12:31:21" itemprop="dateCreated datePublished" datetime="2019-10-30T12:31:21+08:00">2019-10-30</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2019-11-01 09:54:30" itemprop="dateModified" datetime="2019-11-01T09:54:30+08:00">2019-11-01</time>
+                <time title="修改時間：2019-11-09 22:30:25" itemprop="dateModified" datetime="2019-11-09T22:30:25+08:00">2019-11-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -246,11 +244,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="Peterson’s-Solution"><a href="#Peterson’s-Solution" class="headerlink" title="Peterson’s Solution"></a>Peterson’s Solution</h2><p>Peterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。</p>
-<p>以下程式碼中，用i, j兩個變數來表示兩個不同的process。</p>
-<h3 id="兩個process的共用變數"><a href="#兩個process的共用變數" class="headerlink" title="兩個process的共用變數"></a>兩個process的共用變數</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> turn;</span><br><span class="line">boolean flag[<span class="number">2</span>];</span><br></pre></td></tr></table></figure>
-<h3 id="Process-Pi-的程式碼"><a href="#Process-Pi-的程式碼" class="headerlink" title="Process Pi 的程式碼"></a>Process Pi 的程式碼</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    flag[i] = <span class="literal">true</span>;             <span class="comment">// request for critical-section</span></span><br><span class="line">    turn = j;                   <span class="comment">// give priority to another process</span></span><br><span class="line">    <span class="keyword">while</span> (flag[j] &amp;&amp; turn == j)</span><br><span class="line">        ;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// critical section</span></span><br><span class="line"></span><br><span class="line">        flag[i] = <span class="literal">false</span>;        <span class="comment">// cancel the request</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// remainder section</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Intruction-Reordering"><a href="#Intruction-Reordering" class="headerlink" title="Intruction Reordering"></a>Intruction Reordering</h3><p>Reordering 調整了Load, Store的順序。下圖可以看到在Peterson’s Solution中，如果做了Instruciton Reordering會導致兩個Process一起進入Critical Section。<br><img src="https://imgur.com/d4Nheuh.jpg" alt="Alt text" title="The effect of instruction reordering in Peterson&#39;s solution"></p>
+        <h1 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h1><p>我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。</p>
+<h2 id="Producer-Consumer-Problem"><a href="#Producer-Consumer-Problem" class="headerlink" title="Producer-Consumer Problem"></a>Producer-Consumer Problem</h2><p>Producer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="comment">/* produce an item in next_produced */</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span> (count == BUFFER_SIZE)</span><br><span class="line">        ;</span><br><span class="line">    </span><br><span class="line">    buffer[in] = next_produced;</span><br><span class="line">    in = (in + <span class="number">1</span>) % BUFFER_SIZE;</span><br><span class="line">    count++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">while</span> (count == <span class="number">0</span>)</span><br><span class="line">        ;</span><br><span class="line">    </span><br><span class="line">    next_consumed = buffer[out];</span><br><span class="line">    out = (out + <span class="number">1</span>) % BUFFER_SIZE;</span><br><span class="line">    count--;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* consume the item in next_consumed */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Producer中的<code>count++</code>會在硬體中表現為下列的式子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">register1 = count</span><br><span class="line">register1 = register1 + 1</span><br><span class="line">count = register1</span><br></pre></td></tr></table></figure></p>
+<p>Consumer中的<code>count--</code>會在硬體中表現為下列的式子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">register2 = count</span><br><span class="line">register2 = register2 - 1</span><br><span class="line">count = register2</span><br></pre></td></tr></table></figure></p>
+<h2 id="Race-Condition"><a href="#Race-Condition" class="headerlink" title="Race Condition"></a>Race Condition</h2><p>當兩個Process一起運作上面的code，就有可能導致同時修改count的情況，這情況稱為race condition。<br>|Time|Process|   |Operation|Value|<br>|—-|—-|—-|—-|—-|<br>|T0|producer|execute|register1 = count|{register1=5}|<br>|T1|producer|execute|register1 = register1 + 1|{register1=6}|<br>|T2|consume|execute|register2 = count|{register2=5}|<br>|T3|consume|execute|register2 = register2 - 1|{register2=4}|<br>|T4|producer|execute|count = register1|{count=6}|<br>|T5|consume|execute|count = register2|{count=4}|</p>
 
     </div>
 
@@ -268,16 +267,16 @@
 
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
-                <a href="/2019/10/30/note-OS-6-2/" rel="next" title="note-OS-6.2 The Critical-Section Problem">
-                  <i class="fa fa-chevron-left"></i> note-OS-6.2 The Critical-Section Problem
+                <a href="/2019/10/30/hello-world/" rel="next" title="Hello World">
+                  <i class="fa fa-chevron-left"></i> Hello World
                 </a>
             </div>
 
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-                <a href="/2019/11/09/note-OS-6-4/" rel="prev" title="Note-OS-6.4 Hardware Support for Synchronization">
-                  Note-OS-6.4 Hardware Support for Synchronization <i class="fa fa-chevron-right"></i>
+                <a href="/2019/10/30/note-OS-6-2/" rel="prev" title="note-OS-6.2 The Critical-Section Problem">
+                  note-OS-6.2 The Critical-Section Problem <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -317,7 +316,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Peterson’s-Solution"><span class="nav-number">1.</span> <span class="nav-text">Peterson’s Solution</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#兩個process的共用變數"><span class="nav-number">1.1.</span> <span class="nav-text">兩個process的共用變數</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Process-Pi-的程式碼"><span class="nav-number">1.2.</span> <span class="nav-text">Process Pi 的程式碼</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Intruction-Reordering"><span class="nav-number">1.3.</span> <span class="nav-text">Intruction Reordering</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Background"><span class="nav-number">1.</span> <span class="nav-text">Background</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Producer-Consumer-Problem"><span class="nav-number">1.1.</span> <span class="nav-text">Producer-Consumer Problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Race-Condition"><span class="nav-number">1.2.</span> <span class="nav-text">Race Condition</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

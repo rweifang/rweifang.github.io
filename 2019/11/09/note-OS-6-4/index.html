@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.4.2',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '複製',
+      copy_success: '複製成功',
+      copy_failure: '複製失敗'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="Hardware Support for SynchronizationMemory Barrier電腦架構中的memory model大致上可以分為下列兩種  Strongly ordered, 在某一個處理器中做修改記憶體的值，會立刻更新到其它處理器。 Weakly ordered, 在某一個處理器中做修改記憶體的值，不會立刻更新到其它處理器。  Memory model隨處理器而異，有可能是">
+<meta name="keywords" content="Process Synchronization,Operating System">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Note-OS-6.4 Hardware Support for Synchronization">
+<meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;11&#x2F;09&#x2F;note-OS-6-4&#x2F;index.html">
+<meta property="og:site_name" content="weifang&#39;s note">
+<meta property="og:description" content="Hardware Support for SynchronizationMemory Barrier電腦架構中的memory model大致上可以分為下列兩種  Strongly ordered, 在某一個處理器中做修改記憶體的值，會立刻更新到其它處理器。 Weakly ordered, 在某一個處理器中做修改記憶體的值，不會立刻更新到其它處理器。  Memory model隨處理器而異，有可能是">
+<meta property="og:locale" content="zh-TW">
+<meta property="og:updated_time" content="2019-11-09T14:21:30.735Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://rweifang.github.io/2019/11/09/note-OS-6-4/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Note-OS-6.4 Hardware Support for Synchronization | weifang's note</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">weifang's note</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>關於</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>標籤</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分類</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>歸檔</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/11/09/note-OS-6-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wei-Hao Fang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="weifang's note">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Note-OS-6.4 Hardware Support for Synchronization
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2019-11-09 22:20:42 / 修改時間：22:21:30" itemprop="dateCreated datePublished" datetime="2019-11-09T22:20:42+08:00">2019-11-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Operating-System/" itemprop="url" rel="index">
+                    <span itemprop="name">Operating System</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Hardware-Support-for-Synchronization"><a href="#Hardware-Support-for-Synchronization" class="headerlink" title="Hardware Support for Synchronization"></a>Hardware Support for Synchronization</h1><h2 id="Memory-Barrier"><a href="#Memory-Barrier" class="headerlink" title="Memory Barrier"></a>Memory Barrier</h2><p>電腦架構中的memory model大致上可以分為下列兩種</p>
+<ol>
+<li><strong>Strongly ordered</strong>, 在某一個處理器中做修改記憶體的值，會立刻更新到其它處理器。</li>
+<li><strong>Weakly ordered</strong>, 在某一個處理器中做修改記憶體的值，不會立刻更新到其它處理器。</li>
+</ol>
+<p>Memory model隨處理器而異，有可能是Strogly ordered，也有可能是Weakly ordered。透過memory barrier或memory fences的instruction可以強制更新。</p>
+<h2 id="Hardware-Intstructions"><a href="#Hardware-Intstructions" class="headerlink" title="Hardware Intstructions"></a>Hardware Intstructions</h2><h3 id="test-and-set"><a href="#test-and-set" class="headerlink" title="test_and_set()"></a>test_and_set()</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">boolean <span class="title">test_and_set</span><span class="params">(boolean *target)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    boolean rv = *target;</span><br><span class="line">    *target = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> rv;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Mutual-<span class="function">exclusion implementation with <span class="title">test_and_set</span><span class="params">()</span></span></span><br><span class="line">``` cpp</span><br><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">    <span class="keyword">while</span> (test_and_set(&amp;lock))</span><br><span class="line">        ;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* critical section */</span></span><br><span class="line">    lock = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* remainder section */</span></span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="literal">true</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="compare-and-swap"><a href="#compare-and-swap" class="headerlink" title="compare_and_swap()"></a>compare_and_swap()</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">compare_and_swap</span><span class="params">(<span class="keyword">int</span> *value, <span class="keyword">int</span> expected, <span class="keyword">int</span> new_value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> temp = *value;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (*value == expected)</span><br><span class="line">        *value = new_value;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Mutual-exclusion implementation with compare_and_swap()<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">while</span> (compare_and_swap(&amp;lock,<span class="number">0</span>,<span class="number">1</span>) != <span class="number">0</span>)</span><br><span class="line">        ;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* critical section */</span></span><br><span class="line">    lock = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">/* remainder section */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Bounded-waiting mutual-exclusion implementation with compare_and_swap()<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    waiting[i] = <span class="literal">true</span>;</span><br><span class="line">    key = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span> (waiting[i] &amp;&amp; key == <span class="number">1</span>)</span><br><span class="line">        key = compare_and_swap(&amp;lock,<span class="number">0</span>,<span class="number">1</span>);</span><br><span class="line">    waiting[i] = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* critical section */</span></span><br><span class="line">    j = (i + <span class="number">1</span>) % n;</span><br><span class="line">    <span class="keyword">while</span> ((j != i) &amp;&amp; !waiting[j])</span><br><span class="line">        j = (j + <span class="number">1</span>) % n;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (j == i)</span><br><span class="line">        lock = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        waiting[j] = <span class="literal">false</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* remainder section */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Atomic-Variables"><a href="#Atomic-Variables" class="headerlink" title="Atomic Variables"></a>Atomic Variables</h2><p>通常都會使用compare_and_swap(CAS)實作。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">increment</span><span class="params">(<span class="keyword">atomic_int</span> *v)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> temp;</span><br><span class="line">    <span class="keyword">do</span>&#123;</span><br><span class="line">        temp = *v;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span>( temp != compare_and_swap(v,temp,temp+<span class="number">1</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Atomic Variable並不能完全避免race condition。在先前提到的producer-consumer problem中，當producer制造了一個新的物件，兩個consumer可以同時結束它們的while loop。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Process-Synchronization/" rel="tag"># Process Synchronization</a>
+              <a href="/tags/Operating-System/" rel="tag"># Operating System</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/10/31/note-OS-6-3/" rel="next" title="Note-OS-6.3 Perterson's Solution">
+                  <i class="fa fa-chevron-left"></i> Note-OS-6.3 Perterson's Solution
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+                <a href="/2019/11/09/note-OS-6-5/" rel="prev" title="Note-OS-6.5 Mutex Locks">
+                  Note-OS-6.5 Mutex Locks <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Hardware-Support-for-Synchronization"><span class="nav-number">1.</span> <span class="nav-text">Hardware Support for Synchronization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Memory-Barrier"><span class="nav-number">1.1.</span> <span class="nav-text">Memory Barrier</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hardware-Intstructions"><span class="nav-number">1.2.</span> <span class="nav-text">Hardware Intstructions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#test-and-set"><span class="nav-number">1.2.1.</span> <span class="nav-text">test_and_set()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#compare-and-swap"><span class="nav-number">1.2.2.</span> <span class="nav-text">compare_and_swap()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Atomic-Variables"><span class="nav-number">1.3.</span> <span class="nav-text">Atomic Variables</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <img class="site-author-image" itemprop="image" alt="Wei-Hao Fang"
+    src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Wei-Hao Fang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wei-Hao Fang</span>
+</div>
+  
+  
+  
+
+<div id="days"></div>
+<script>
+function show_date_time(){
+    window.setTimeout("show_date_time()", 1000);
+    BirthDay=new Date("10/30/2019 01:40:00");//修改为自己的blog建站时间
+    today=new Date();
+    timeold=(today.getTime()-BirthDay.getTime());
+    sectimeold=timeold/1000
+    secondsold=Math.floor(sectimeold);
+    msPerDay=24*60*60*1000
+    e_daysold=timeold/msPerDay
+    daysold=Math.floor(e_daysold);
+    e_hrsold=(e_daysold-daysold)*24;
+    hrsold=setzero(Math.floor(e_hrsold));
+    e_minsold=(e_hrsold-hrsold)*60;
+    minsold=setzero(Math.floor((e_hrsold-hrsold)*60));
+    seconds=setzero(Math.floor((e_minsold-minsold)*60));
+    document.getElementById('days').innerHTML="本站已安全运行"+daysold+"天"+hrsold+"小时"+minsold+"分"+seconds+"秒";
+}
+function setzero(i){
+    if (i<10)
+    {i="0" + i};
+    return i;
+}
+show_date_time();
+</script>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

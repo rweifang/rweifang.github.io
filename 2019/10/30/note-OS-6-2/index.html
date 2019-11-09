@@ -50,20 +50,18 @@
   };
 </script>
 
-  <meta name="description" content="Peterson’s SolutionPeterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。 以下程式碼中，用i, j兩個變數來表示兩個不同的process。 兩個process的共用變數12int turn;boo">
+  <meta name="description" content="The Critical-Section Problem考慮到某一個系統中有n個Process，它們的程式中有一部份中程式碼稱為Critical Section，這個資源可能被其它的Process存取、修改。Critical Section Problem的目的是設計一個協議，使得Process可以同步它們的活動，使得資料可以在不同的Process中分享。 一個普遍的Process有著下面的結構，">
 <meta name="keywords" content="Process Synchronization,Operating System">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Note-OS-6.3 Perterson&#39;s Solution">
-<meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;10&#x2F;31&#x2F;note-OS-6-3&#x2F;index.html">
+<meta property="og:title" content="note-OS-6.2 The Critical-Section Problem">
+<meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;10&#x2F;30&#x2F;note-OS-6-2&#x2F;index.html">
 <meta property="og:site_name" content="weifang&#39;s note">
-<meta property="og:description" content="Peterson’s SolutionPeterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。 以下程式碼中，用i, j兩個變數來表示兩個不同的process。 兩個process的共用變數12int turn;boo">
+<meta property="og:description" content="The Critical-Section Problem考慮到某一個系統中有n個Process，它們的程式中有一部份中程式碼稱為Critical Section，這個資源可能被其它的Process存取、修改。Critical Section Problem的目的是設計一個協議，使得Process可以同步它們的活動，使得資料可以在不同的Process中分享。 一個普遍的Process有著下面的結構，">
 <meta property="og:locale" content="zh-TW">
-<meta property="og:image" content="https:&#x2F;&#x2F;imgur.com&#x2F;d4Nheuh.jpg">
-<meta property="og:updated_time" content="2019-11-01T01:54:30.989Z">
+<meta property="og:updated_time" content="2019-11-09T14:30:25.468Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;imgur.com&#x2F;d4Nheuh.jpg">
 
-<link rel="canonical" href="http://rweifang.github.io/2019/10/31/note-OS-6-3/">
+<link rel="canonical" href="http://rweifang.github.io/2019/10/30/note-OS-6-2/">
 
 
 <script id="page-configurations">
@@ -77,7 +75,7 @@
   };
 </script>
 
-  <title>Note-OS-6.3 Perterson's Solution | weifang's note</title>
+  <title>note-OS-6.2 The Critical-Section Problem | weifang's note</title>
   
 
 
@@ -191,7 +189,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/10/31/note-OS-6-3/">
+    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/10/30/note-OS-6-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -204,7 +202,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Note-OS-6.3 Perterson's Solution
+          note-OS-6.2 The Critical-Section Problem
         </h1>
 
         <div class="post-meta">
@@ -214,14 +212,14 @@
               </span>
               <span class="post-meta-item-text">發表於</span>
 
-              <time title="創建時間：2019-10-31 23:44:37" itemprop="dateCreated datePublished" datetime="2019-10-31T23:44:37+08:00">2019-10-31</time>
+              <time title="創建時間：2019-10-30 14:33:23" itemprop="dateCreated datePublished" datetime="2019-10-30T14:33:23+08:00">2019-10-30</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2019-11-01 09:54:30" itemprop="dateModified" datetime="2019-11-01T09:54:30+08:00">2019-11-01</time>
+                <time title="修改時間：2019-11-09 22:30:25" itemprop="dateModified" datetime="2019-11-09T22:30:25+08:00">2019-11-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -246,11 +244,18 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="Peterson’s-Solution"><a href="#Peterson’s-Solution" class="headerlink" title="Peterson’s Solution"></a>Peterson’s Solution</h2><p>Peterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。</p>
-<p>以下程式碼中，用i, j兩個變數來表示兩個不同的process。</p>
-<h3 id="兩個process的共用變數"><a href="#兩個process的共用變數" class="headerlink" title="兩個process的共用變數"></a>兩個process的共用變數</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> turn;</span><br><span class="line">boolean flag[<span class="number">2</span>];</span><br></pre></td></tr></table></figure>
-<h3 id="Process-Pi-的程式碼"><a href="#Process-Pi-的程式碼" class="headerlink" title="Process Pi 的程式碼"></a>Process Pi 的程式碼</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    flag[i] = <span class="literal">true</span>;             <span class="comment">// request for critical-section</span></span><br><span class="line">    turn = j;                   <span class="comment">// give priority to another process</span></span><br><span class="line">    <span class="keyword">while</span> (flag[j] &amp;&amp; turn == j)</span><br><span class="line">        ;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// critical section</span></span><br><span class="line"></span><br><span class="line">        flag[i] = <span class="literal">false</span>;        <span class="comment">// cancel the request</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// remainder section</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Intruction-Reordering"><a href="#Intruction-Reordering" class="headerlink" title="Intruction Reordering"></a>Intruction Reordering</h3><p>Reordering 調整了Load, Store的順序。下圖可以看到在Peterson’s Solution中，如果做了Instruciton Reordering會導致兩個Process一起進入Critical Section。<br><img src="https://imgur.com/d4Nheuh.jpg" alt="Alt text" title="The effect of instruction reordering in Peterson&#39;s solution"></p>
+        <h1 id="The-Critical-Section-Problem"><a href="#The-Critical-Section-Problem" class="headerlink" title="The Critical-Section Problem"></a>The Critical-Section Problem</h1><p>考慮到某一個系統中有n個Process，它們的程式中有一部份中程式碼稱為Critical Section，這個資源可能被其它的Process存取、修改。Critical Section Problem的目的是設計一個協議，使得Process可以同步它們的活動，使得資料可以在不同的Process中分享。</p>
+<p>一個普遍的Process有著下面的結構，包含Initialize, Entry Section, Critical Section, Exit Section, Remainder Section。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    <span class="comment">// Some arbitrary code (such as initialization).</span></span><br><span class="line"></span><br><span class="line">    EnterCriticalSection(cs);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// The code that constitutes the CS.</span></span><br><span class="line">    <span class="comment">// Only one process can be executing this code at the same time. </span></span><br><span class="line"></span><br><span class="line">    LeaveCriticalSection(cs);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Some arbitrary code. This is called the remainder section.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="A-solution-to-the-critical-section-Problem"><a href="#A-solution-to-the-critical-section-Problem" class="headerlink" title="A solution to the critical section Problem"></a>A solution to the critical section Problem</h2><p>Critical section的解需要滿足下列三個條件</p>
+<ol>
+<li><strong>Mutual exclusion</strong> 當某一個Process正在critical section中時，其它的Process不能進入、運作在Critical Section。</li>
+<li><strong>Progress</strong> 當沒有Process在critical section，而且有Process想要進入critical section。只有還沒進入remainder section的Process可以還擇誰可以進入critical section。這選擇不能被無止盡的延後，deadlock會違反這個條件。</li>
+<li><strong>Bounded waiting</strong> 必須確定對於任何一個已經請求但還沒進人critical section的Process，最後都有機會可以進入critical section。舉例來說，使用stack決定進入的順序就違反。</li>
+</ol>
+<h2 id="untitled"><a href="#untitled" class="headerlink" title="untitled"></a>untitled</h2><p>如果在單核心系統中，透過在修改共用變數時禁止interrupt的發生，可以避免the critical section problem。<br>在多核心系統中，有不同的方法去處理preemptive kernels與nonpreemptive kernels中的這個問題。對於nonpreemptive kernels，可以直接限制一次只執行一個Process來避免critical section problem，但nonpreemptive kernels容易導致效能低落。<br>對於preemptive kernels的解法會在後面的章節敘述。</p>
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ol>
+<li><a href="https://stackoverflow.com/questions/33143779/what-is-progress-and-bounded-waiting-in-critical-section/33409854" target="_blank" rel="noopener">What is progress and bounded waiting in critical section?</a></li>
+</ol>
 
     </div>
 
@@ -268,16 +273,16 @@
 
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
-                <a href="/2019/10/30/note-OS-6-2/" rel="next" title="note-OS-6.2 The Critical-Section Problem">
-                  <i class="fa fa-chevron-left"></i> note-OS-6.2 The Critical-Section Problem
+                <a href="/2019/10/30/note-OS-6-1/" rel="next" title="note-OS-6.1 Background">
+                  <i class="fa fa-chevron-left"></i> note-OS-6.1 Background
                 </a>
             </div>
 
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-                <a href="/2019/11/09/note-OS-6-4/" rel="prev" title="Note-OS-6.4 Hardware Support for Synchronization">
-                  Note-OS-6.4 Hardware Support for Synchronization <i class="fa fa-chevron-right"></i>
+                <a href="/2019/10/31/note-OS-6-3/" rel="prev" title="Note-OS-6.3 Perterson's Solution">
+                  Note-OS-6.3 Perterson's Solution <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -317,7 +322,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Peterson’s-Solution"><span class="nav-number">1.</span> <span class="nav-text">Peterson’s Solution</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#兩個process的共用變數"><span class="nav-number">1.1.</span> <span class="nav-text">兩個process的共用變數</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Process-Pi-的程式碼"><span class="nav-number">1.2.</span> <span class="nav-text">Process Pi 的程式碼</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Intruction-Reordering"><span class="nav-number">1.3.</span> <span class="nav-text">Intruction Reordering</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#The-Critical-Section-Problem"><span class="nav-number">1.</span> <span class="nav-text">The Critical-Section Problem</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#A-solution-to-the-critical-section-Problem"><span class="nav-number">1.1.</span> <span class="nav-text">A solution to the critical section Problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#untitled"><span class="nav-number">1.2.</span> <span class="nav-text">untitled</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#參考資料"><span class="nav-number">1.3.</span> <span class="nav-text">參考資料</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

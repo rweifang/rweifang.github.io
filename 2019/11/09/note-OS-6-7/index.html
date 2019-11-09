@@ -50,20 +50,18 @@
   };
 </script>
 
-  <meta name="description" content="Peterson’s SolutionPeterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。 以下程式碼中，用i, j兩個變數來表示兩個不同的process。 兩個process的共用變數12int turn;boo">
+  <meta name="description" content="Monitors先前介紹了mutex和semaphore，但是錯誤的使用它們會導致嚴重的錯誤。接下來我們介紹更高階的同步工具monitor。monitor將mutex或semaphore的功能封裝成一個物件，只能透過monitor提供的函數對其操作。 Condition variable首先介紹monitor中會用到的data type, condition，condition可以使用的funct">
 <meta name="keywords" content="Process Synchronization,Operating System">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Note-OS-6.3 Perterson&#39;s Solution">
-<meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;10&#x2F;31&#x2F;note-OS-6-3&#x2F;index.html">
+<meta property="og:title" content="Note-OS-6.7 Monitors">
+<meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;11&#x2F;09&#x2F;note-OS-6-7&#x2F;index.html">
 <meta property="og:site_name" content="weifang&#39;s note">
-<meta property="og:description" content="Peterson’s SolutionPeterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。 以下程式碼中，用i, j兩個變數來表示兩個不同的process。 兩個process的共用變數12int turn;boo">
+<meta property="og:description" content="Monitors先前介紹了mutex和semaphore，但是錯誤的使用它們會導致嚴重的錯誤。接下來我們介紹更高階的同步工具monitor。monitor將mutex或semaphore的功能封裝成一個物件，只能透過monitor提供的函數對其操作。 Condition variable首先介紹monitor中會用到的data type, condition，condition可以使用的funct">
 <meta property="og:locale" content="zh-TW">
-<meta property="og:image" content="https:&#x2F;&#x2F;imgur.com&#x2F;d4Nheuh.jpg">
-<meta property="og:updated_time" content="2019-11-01T01:54:30.989Z">
+<meta property="og:updated_time" content="2019-11-09T14:26:23.925Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;imgur.com&#x2F;d4Nheuh.jpg">
 
-<link rel="canonical" href="http://rweifang.github.io/2019/10/31/note-OS-6-3/">
+<link rel="canonical" href="http://rweifang.github.io/2019/11/09/note-OS-6-7/">
 
 
 <script id="page-configurations">
@@ -77,7 +75,7 @@
   };
 </script>
 
-  <title>Note-OS-6.3 Perterson's Solution | weifang's note</title>
+  <title>Note-OS-6.7 Monitors | weifang's note</title>
   
 
 
@@ -191,7 +189,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/10/31/note-OS-6-3/">
+    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/11/09/note-OS-6-7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -204,7 +202,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Note-OS-6.3 Perterson's Solution
+          Note-OS-6.7 Monitors
         </h1>
 
         <div class="post-meta">
@@ -213,16 +211,10 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">發表於</span>
+              
 
-              <time title="創建時間：2019-10-31 23:44:37" itemprop="dateCreated datePublished" datetime="2019-10-31T23:44:37+08:00">2019-10-31</time>
+              <time title="創建時間：2019-11-09 22:22:10 / 修改時間：22:26:23" itemprop="dateCreated datePublished" datetime="2019-11-09T22:22:10+08:00">2019-11-09</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2019-11-01 09:54:30" itemprop="dateModified" datetime="2019-11-01T09:54:30+08:00">2019-11-01</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -246,11 +238,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="Peterson’s-Solution"><a href="#Peterson’s-Solution" class="headerlink" title="Peterson’s Solution"></a>Peterson’s Solution</h2><p>Peterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。</p>
-<p>以下程式碼中，用i, j兩個變數來表示兩個不同的process。</p>
-<h3 id="兩個process的共用變數"><a href="#兩個process的共用變數" class="headerlink" title="兩個process的共用變數"></a>兩個process的共用變數</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> turn;</span><br><span class="line">boolean flag[<span class="number">2</span>];</span><br></pre></td></tr></table></figure>
-<h3 id="Process-Pi-的程式碼"><a href="#Process-Pi-的程式碼" class="headerlink" title="Process Pi 的程式碼"></a>Process Pi 的程式碼</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    flag[i] = <span class="literal">true</span>;             <span class="comment">// request for critical-section</span></span><br><span class="line">    turn = j;                   <span class="comment">// give priority to another process</span></span><br><span class="line">    <span class="keyword">while</span> (flag[j] &amp;&amp; turn == j)</span><br><span class="line">        ;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// critical section</span></span><br><span class="line"></span><br><span class="line">        flag[i] = <span class="literal">false</span>;        <span class="comment">// cancel the request</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// remainder section</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Intruction-Reordering"><a href="#Intruction-Reordering" class="headerlink" title="Intruction Reordering"></a>Intruction Reordering</h3><p>Reordering 調整了Load, Store的順序。下圖可以看到在Peterson’s Solution中，如果做了Instruciton Reordering會導致兩個Process一起進入Critical Section。<br><img src="https://imgur.com/d4Nheuh.jpg" alt="Alt text" title="The effect of instruction reordering in Peterson&#39;s solution"></p>
+        <h1 id="Monitors"><a href="#Monitors" class="headerlink" title="Monitors"></a>Monitors</h1><p>先前介紹了mutex和semaphore，但是錯誤的使用它們會導致嚴重的錯誤。接下來我們介紹更高階的同步工具<code>monitor</code>。<code>monitor</code>將mutex或semaphore的功能封裝成一個物件，只能透過<code>monitor</code>提供的函數對其操作。</p>
+<h2 id="Condition-variable"><a href="#Condition-variable" class="headerlink" title="Condition variable"></a>Condition variable</h2><p>首先介紹monitor中會用到的data type, <code>condition</code>，condition可以使用的function為<code>wait()</code>以及<code>signal()</code>。<br>使用<code>wait()</code>的process會被暫停，而呼叫<code>signal()</code>會使被暫停的process繼續，如果沒有被暫停的process則沒有效果。</p>
+<p>Condition variable中的<code>signal()</code>喚醒的對象可以使用first come, first serves (FCFS)的策略，或是使用<code>wait(c)</code>對暫停的process加入權重。</p>
+<p>大致上的定義如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    binary_semaphore next;</span><br><span class="line">    <span class="keyword">int</span> next_count;         <span class="comment">// number of suspended process;</span></span><br><span class="line">    binary_semaphore x_sem;</span><br><span class="line">    <span class="keyword">int</span> x_count;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">wait</span><span class="params">()</span></span>&#123;</span><br><span class="line">        x_count++;</span><br><span class="line">        <span class="keyword">if</span> (next_count &gt; <span class="number">0</span>)</span><br><span class="line">            signal(next);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            signal(mutex);</span><br><span class="line">        wait(x_sem);</span><br><span class="line">        x_count--;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">signal</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (x_count &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            next_count++;</span><br><span class="line">            signal(x_sem);</span><br><span class="line">            wait(next);</span><br><span class="line">            next_count--;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span>&#123;</span><br><span class="line">        x_count = <span class="number">0</span>;</span><br><span class="line">        next = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;condition;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Implementation-with-Semaphores"><a href="#Implementation-with-Semaphores" class="headerlink" title="Implementation with Semaphores"></a>Implementation with Semaphores</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">monitor ResourseAllocator</span><br><span class="line">&#123;</span><br><span class="line">    boolean busy;</span><br><span class="line">    condition x;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> time)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (busy)</span><br><span class="line">            x.busy(time);</span><br><span class="line">        busy = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">release</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        busy = <span class="literal">false</span>;</span><br><span class="line">        x.signal();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    initialization_code() &#123;</span><br><span class="line">        busy = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Resuming-Processes-within-a-Monitors"><a href="#Resuming-Processes-within-a-Monitors" class="headerlink" title="Resuming Processes within a Monitors"></a>Resuming Processes within a Monitors</h2><p>對於一個ResourceAllocator R，可以使用以下的方式：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">R.acquire(t);</span><br><span class="line"></span><br><span class="line"><span class="comment">//access the resource;</span></span><br><span class="line"></span><br><span class="line">R.release();</span><br></pre></td></tr></table></figure></p>
 
     </div>
 
@@ -268,17 +261,14 @@
 
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
-                <a href="/2019/10/30/note-OS-6-2/" rel="next" title="note-OS-6.2 The Critical-Section Problem">
-                  <i class="fa fa-chevron-left"></i> note-OS-6.2 The Critical-Section Problem
+                <a href="/2019/11/09/note-OS-6-6/" rel="next" title="Note-OS-6.6 Semaphores">
+                  <i class="fa fa-chevron-left"></i> Note-OS-6.6 Semaphores
                 </a>
             </div>
 
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-                <a href="/2019/11/09/note-OS-6-4/" rel="prev" title="Note-OS-6.4 Hardware Support for Synchronization">
-                  Note-OS-6.4 Hardware Support for Synchronization <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
       </footer>
@@ -317,7 +307,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Peterson’s-Solution"><span class="nav-number">1.</span> <span class="nav-text">Peterson’s Solution</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#兩個process的共用變數"><span class="nav-number">1.1.</span> <span class="nav-text">兩個process的共用變數</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Process-Pi-的程式碼"><span class="nav-number">1.2.</span> <span class="nav-text">Process Pi 的程式碼</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Intruction-Reordering"><span class="nav-number">1.3.</span> <span class="nav-text">Intruction Reordering</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Monitors"><span class="nav-number">1.</span> <span class="nav-text">Monitors</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Condition-variable"><span class="nav-number">1.1.</span> <span class="nav-text">Condition variable</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Implementation-with-Semaphores"><span class="nav-number">1.2.</span> <span class="nav-text">Implementation with Semaphores</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Resuming-Processes-within-a-Monitors"><span class="nav-number">1.3.</span> <span class="nav-text">Resuming Processes within a Monitors</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

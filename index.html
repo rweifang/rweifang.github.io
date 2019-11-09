@@ -185,6 +185,311 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/11/09/note-OS-6-7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wei-Hao Fang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="weifang's note">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/09/note-OS-6-7/" class="post-title-link" itemprop="url">Note-OS-6.7 Monitors</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2019-11-09 22:22:10 / 修改時間：22:26:23" itemprop="dateCreated datePublished" datetime="2019-11-09T22:22:10+08:00">2019-11-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Operating-System/" itemprop="url" rel="index">
+                    <span itemprop="name">Operating System</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Monitors"><a href="#Monitors" class="headerlink" title="Monitors"></a>Monitors</h1><p>先前介紹了mutex和semaphore，但是錯誤的使用它們會導致嚴重的錯誤。接下來我們介紹更高階的同步工具<code>monitor</code>。<code>monitor</code>將mutex或semaphore的功能封裝成一個物件，只能透過<code>monitor</code>提供的函數對其操作。</p>
+<h2 id="Condition-variable"><a href="#Condition-variable" class="headerlink" title="Condition variable"></a>Condition variable</h2><p>首先介紹monitor中會用到的data type, <code>condition</code>，condition可以使用的function為<code>wait()</code>以及<code>signal()</code>。<br>使用<code>wait()</code>的process會被暫停，而呼叫<code>signal()</code>會使被暫停的process繼續，如果沒有被暫停的process則沒有效果。</p>
+<p>Condition variable中的<code>signal()</code>喚醒的對象可以使用first come, first serves (FCFS)的策略，或是使用<code>wait(c)</code>對暫停的process加入權重。</p>
+<p>大致上的定義如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    binary_semaphore next;</span><br><span class="line">    <span class="keyword">int</span> next_count;         <span class="comment">// number of suspended process;</span></span><br><span class="line">    binary_semaphore x_sem;</span><br><span class="line">    <span class="keyword">int</span> x_count;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">wait</span><span class="params">()</span></span>&#123;</span><br><span class="line">        x_count++;</span><br><span class="line">        <span class="keyword">if</span> (next_count &gt; <span class="number">0</span>)</span><br><span class="line">            signal(next);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            signal(mutex);</span><br><span class="line">        wait(x_sem);</span><br><span class="line">        x_count--;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">signal</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (x_count &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            next_count++;</span><br><span class="line">            signal(x_sem);</span><br><span class="line">            wait(next);</span><br><span class="line">            next_count--;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span>&#123;</span><br><span class="line">        x_count = <span class="number">0</span>;</span><br><span class="line">        next = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;condition;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Implementation-with-Semaphores"><a href="#Implementation-with-Semaphores" class="headerlink" title="Implementation with Semaphores"></a>Implementation with Semaphores</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">monitor ResourseAllocator</span><br><span class="line">&#123;</span><br><span class="line">    boolean busy;</span><br><span class="line">    condition x;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> time)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (busy)</span><br><span class="line">            x.busy(time);</span><br><span class="line">        busy = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">release</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        busy = <span class="literal">false</span>;</span><br><span class="line">        x.signal();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    initialization_code() &#123;</span><br><span class="line">        busy = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Resuming-Processes-within-a-Monitors"><a href="#Resuming-Processes-within-a-Monitors" class="headerlink" title="Resuming Processes within a Monitors"></a>Resuming Processes within a Monitors</h2><p>對於一個ResourceAllocator R，可以使用以下的方式：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">R.acquire(t);</span><br><span class="line"></span><br><span class="line"><span class="comment">//access the resource;</span></span><br><span class="line"></span><br><span class="line">R.release();</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/11/09/note-OS-6-6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wei-Hao Fang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="weifang's note">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/09/note-OS-6-6/" class="post-title-link" itemprop="url">Note-OS-6.6 Semaphores</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2019-11-09 22:22:08 / 修改時間：22:23:28" itemprop="dateCreated datePublished" datetime="2019-11-09T22:22:08+08:00">2019-11-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Operating-System/" itemprop="url" rel="index">
+                    <span itemprop="name">Operating System</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Semaphores"><a href="#Semaphores" class="headerlink" title="Semaphores"></a>Semaphores</h1><p>Semaphore是一個整數的變數，可以透過wait(), signal()來使用它，必須注意的是wait(), signal()要是atomically的運作，也就是無法被超過一個以上的process同時修改數值。</p>
+<p>The definition of wait() and signal()<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">wait(S) &#123;</span><br><span class="line">    <span class="keyword">while</span> (S &lt;= <span class="number">0</span>)</span><br><span class="line">        ; <span class="comment">// busy wait</span></span><br><span class="line">    S--;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">signal(S) &#123;</span><br><span class="line">    S++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Semaphores-Usage"><a href="#Semaphores-Usage" class="headerlink" title="Semaphores Usage"></a>Semaphores Usage</h2><h3 id="counting-semaphore"><a href="#counting-semaphore" class="headerlink" title="counting semaphore"></a>counting semaphore</h3><p>Counting semaphore的數值沒有限制，它可以用來將資源的存取權給予有限數量的process。</p>
+<h3 id="binary-semaphore"><a href="#binary-semaphore" class="headerlink" title="binary semaphore"></a>binary semaphore</h3><p>當semaphore的值只有0, 1時，稱為binary semaphore，可以當作mutex lock來使用。</p>
+<h3 id="synchronization"><a href="#synchronization" class="headerlink" title="synchronization"></a>synchronization</h3><p>Semaphore也可以用來同步process。以下面兩個statemen S1,S2及process P1,P2舉例，當P1的S1結束後，才會開始P2的S2。</p>
+<p>Process P1<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">S1;</span><br><span class="line">signal(synch);</span><br></pre></td></tr></table></figure><br>Process P2<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wait(synch);</span><br><span class="line">S2;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Semaphores-Implementation"><a href="#Semaphores-Implementation" class="headerlink" title="Semaphores Implementation"></a>Semaphores Implementation</h2><p>下面定義了semaphore的結構，其中包含了一個計數器和記錄process的list。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> value;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">process</span> *<span class="title">list</span>;</span></span><br><span class="line">&#125;semaphore;</span><br><span class="line"></span><br><span class="line">wait(semaphore *S)&#123;</span><br><span class="line">    S-&gt;value--;</span><br><span class="line">    <span class="keyword">if</span> (S-&gt;value &lt;<span class="number">0</span>) &#123;</span><br><span class="line">        add <span class="keyword">this</span> process to S-&gt;<span class="built_in">list</span>;</span><br><span class="line">        sleep();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">signal(semaphore *S)&#123;</span><br><span class="line">    S-&gt;value++;</span><br><span class="line">    <span class="keyword">if</span> (S-&gt;value &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        remove a process P from S-&gt;<span class="built_in">list</span>;</span><br><span class="line">        wakeup(P);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>在SMP系統中，為了避免禁止interrupt導致後續的效能低落，必須提供compare_and_swap()或是spinlock的方式，確保<code>wait()</code>跟<code>signal()</code>可以atomically運作。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/11/09/note-OS-6-5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wei-Hao Fang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="weifang's note">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/09/note-OS-6-5/" class="post-title-link" itemprop="url">Note-OS-6.5 Mutex Locks</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2019-11-09 22:22:06 / 修改時間：22:27:13" itemprop="dateCreated datePublished" datetime="2019-11-09T22:22:06+08:00">2019-11-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Operating-System/" itemprop="url" rel="index">
+                    <span itemprop="name">Operating System</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Mutex-Locks"><a href="#Mutex-Locks" class="headerlink" title="Mutex Locks"></a>Mutex Locks</h1><p>Mutex為Mutual exclusion的縮寫。Mutex Locks如同進入critical section的鑰匙，進入前需要先取得鑰匙，離開時釋出鑰匙。 </p>
+<h2 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h2><p>Solution to the critical-section problem using mutex Locks<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">&#123;</span><br><span class="line">    acquire();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// critical section</span></span><br><span class="line"></span><br><span class="line">    release();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// remainder section</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>acquire(), release()都需要使用atomic operation。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">acquire()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span> (!availabe) </span><br><span class="line">        ;</span><br><span class="line">    avaliable = atomically_set_false();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">release()</span><br><span class="line">&#123;</span><br><span class="line">    avaliable = atomically_set_true();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="busy-waiting"><a href="#busy-waiting" class="headerlink" title="busy waiting"></a>busy waiting</h2><p>在先前的作法中，會在entry section使用while loop等待進入critical section，這種always true的while稱為busy waiting。busy waiting會使得系統資源的浪費，後續的篇章會使用sleep()避免busy waiting的發生。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/11/09/note-OS-6-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wei-Hao Fang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="weifang's note">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/09/note-OS-6-4/" class="post-title-link" itemprop="url">Note-OS-6.4 Hardware Support for Synchronization</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2019-11-09 22:20:42 / 修改時間：22:21:30" itemprop="dateCreated datePublished" datetime="2019-11-09T22:20:42+08:00">2019-11-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Operating-System/" itemprop="url" rel="index">
+                    <span itemprop="name">Operating System</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Hardware-Support-for-Synchronization"><a href="#Hardware-Support-for-Synchronization" class="headerlink" title="Hardware Support for Synchronization"></a>Hardware Support for Synchronization</h1><h2 id="Memory-Barrier"><a href="#Memory-Barrier" class="headerlink" title="Memory Barrier"></a>Memory Barrier</h2><p>電腦架構中的memory model大致上可以分為下列兩種</p>
+<ol>
+<li><strong>Strongly ordered</strong>, 在某一個處理器中做修改記憶體的值，會立刻更新到其它處理器。</li>
+<li><strong>Weakly ordered</strong>, 在某一個處理器中做修改記憶體的值，不會立刻更新到其它處理器。</li>
+</ol>
+<p>Memory model隨處理器而異，有可能是Strogly ordered，也有可能是Weakly ordered。透過memory barrier或memory fences的instruction可以強制更新。</p>
+<h2 id="Hardware-Intstructions"><a href="#Hardware-Intstructions" class="headerlink" title="Hardware Intstructions"></a>Hardware Intstructions</h2><h3 id="test-and-set"><a href="#test-and-set" class="headerlink" title="test_and_set()"></a>test_and_set()</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">boolean <span class="title">test_and_set</span><span class="params">(boolean *target)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    boolean rv = *target;</span><br><span class="line">    *target = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> rv;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Mutual-<span class="function">exclusion implementation with <span class="title">test_and_set</span><span class="params">()</span></span></span><br><span class="line">``` cpp</span><br><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">    <span class="keyword">while</span> (test_and_set(&amp;lock))</span><br><span class="line">        ;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* critical section */</span></span><br><span class="line">    lock = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* remainder section */</span></span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="literal">true</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="compare-and-swap"><a href="#compare-and-swap" class="headerlink" title="compare_and_swap()"></a>compare_and_swap()</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">compare_and_swap</span><span class="params">(<span class="keyword">int</span> *value, <span class="keyword">int</span> expected, <span class="keyword">int</span> new_value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> temp = *value;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (*value == expected)</span><br><span class="line">        *value = new_value;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Mutual-exclusion implementation with compare_and_swap()<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">while</span> (compare_and_swap(&amp;lock,<span class="number">0</span>,<span class="number">1</span>) != <span class="number">0</span>)</span><br><span class="line">        ;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* critical section */</span></span><br><span class="line">    lock = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">/* remainder section */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Bounded-waiting mutual-exclusion implementation with compare_and_swap()<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    waiting[i] = <span class="literal">true</span>;</span><br><span class="line">    key = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span> (waiting[i] &amp;&amp; key == <span class="number">1</span>)</span><br><span class="line">        key = compare_and_swap(&amp;lock,<span class="number">0</span>,<span class="number">1</span>);</span><br><span class="line">    waiting[i] = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* critical section */</span></span><br><span class="line">    j = (i + <span class="number">1</span>) % n;</span><br><span class="line">    <span class="keyword">while</span> ((j != i) &amp;&amp; !waiting[j])</span><br><span class="line">        j = (j + <span class="number">1</span>) % n;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (j == i)</span><br><span class="line">        lock = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        waiting[j] = <span class="literal">false</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* remainder section */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Atomic-Variables"><a href="#Atomic-Variables" class="headerlink" title="Atomic Variables"></a>Atomic Variables</h2><p>通常都會使用compare_and_swap(CAS)實作。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">increment</span><span class="params">(<span class="keyword">atomic_int</span> *v)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> temp;</span><br><span class="line">    <span class="keyword">do</span>&#123;</span><br><span class="line">        temp = *v;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span>( temp != compare_and_swap(v,temp,temp+<span class="number">1</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Atomic Variable並不能完全避免race condition。在先前提到的producer-consumer problem中，當producer制造了一個新的物件，兩個consumer可以同時結束它們的while loop。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-TW">
     <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/10/31/note-OS-6-3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -265,6 +570,174 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/10/30/note-OS-6-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wei-Hao Fang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="weifang's note">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/10/30/note-OS-6-2/" class="post-title-link" itemprop="url">note-OS-6.2 The Critical-Section Problem</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2019-10-30 14:33:23" itemprop="dateCreated datePublished" datetime="2019-10-30T14:33:23+08:00">2019-10-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2019-11-09 22:30:25" itemprop="dateModified" datetime="2019-11-09T22:30:25+08:00">2019-11-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Operating-System/" itemprop="url" rel="index">
+                    <span itemprop="name">Operating System</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="The-Critical-Section-Problem"><a href="#The-Critical-Section-Problem" class="headerlink" title="The Critical-Section Problem"></a>The Critical-Section Problem</h1><p>考慮到某一個系統中有n個Process，它們的程式中有一部份中程式碼稱為Critical Section，這個資源可能被其它的Process存取、修改。Critical Section Problem的目的是設計一個協議，使得Process可以同步它們的活動，使得資料可以在不同的Process中分享。</p>
+<p>一個普遍的Process有著下面的結構，包含Initialize, Entry Section, Critical Section, Exit Section, Remainder Section。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    <span class="comment">// Some arbitrary code (such as initialization).</span></span><br><span class="line"></span><br><span class="line">    EnterCriticalSection(cs);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// The code that constitutes the CS.</span></span><br><span class="line">    <span class="comment">// Only one process can be executing this code at the same time. </span></span><br><span class="line"></span><br><span class="line">    LeaveCriticalSection(cs);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Some arbitrary code. This is called the remainder section.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="A-solution-to-the-critical-section-Problem"><a href="#A-solution-to-the-critical-section-Problem" class="headerlink" title="A solution to the critical section Problem"></a>A solution to the critical section Problem</h2><p>Critical section的解需要滿足下列三個條件</p>
+<ol>
+<li><strong>Mutual exclusion</strong> 當某一個Process正在critical section中時，其它的Process不能進入、運作在Critical Section。</li>
+<li><strong>Progress</strong> 當沒有Process在critical section，而且有Process想要進入critical section。只有還沒進入remainder section的Process可以還擇誰可以進入critical section。這選擇不能被無止盡的延後，deadlock會違反這個條件。</li>
+<li><strong>Bounded waiting</strong> 必須確定對於任何一個已經請求但還沒進人critical section的Process，最後都有機會可以進入critical section。舉例來說，使用stack決定進入的順序就違反。</li>
+</ol>
+<h2 id="untitled"><a href="#untitled" class="headerlink" title="untitled"></a>untitled</h2><p>如果在單核心系統中，透過在修改共用變數時禁止interrupt的發生，可以避免the critical section problem。<br>在多核心系統中，有不同的方法去處理preemptive kernels與nonpreemptive kernels中的這個問題。對於nonpreemptive kernels，可以直接限制一次只執行一個Process來避免critical section problem，但nonpreemptive kernels容易導致效能低落。<br>對於preemptive kernels的解法會在後面的章節敘述。</p>
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ol>
+<li><a href="https://stackoverflow.com/questions/33143779/what-is-progress-and-bounded-waiting-in-critical-section/33409854" target="_blank" rel="noopener">What is progress and bounded waiting in critical section?</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/10/30/note-OS-6-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Wei-Hao Fang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="weifang's note">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/10/30/note-OS-6-1/" class="post-title-link" itemprop="url">note-OS-6.1 Background</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2019-10-30 12:31:21" itemprop="dateCreated datePublished" datetime="2019-10-30T12:31:21+08:00">2019-10-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2019-11-09 22:30:25" itemprop="dateModified" datetime="2019-11-09T22:30:25+08:00">2019-11-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Operating-System/" itemprop="url" rel="index">
+                    <span itemprop="name">Operating System</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h1><p>我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。</p>
+<h2 id="Producer-Consumer-Problem"><a href="#Producer-Consumer-Problem" class="headerlink" title="Producer-Consumer Problem"></a>Producer-Consumer Problem</h2><p>Producer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="comment">/* produce an item in next_produced */</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span> (count == BUFFER_SIZE)</span><br><span class="line">        ;</span><br><span class="line">    </span><br><span class="line">    buffer[in] = next_produced;</span><br><span class="line">    in = (in + <span class="number">1</span>) % BUFFER_SIZE;</span><br><span class="line">    count++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">while</span> (count == <span class="number">0</span>)</span><br><span class="line">        ;</span><br><span class="line">    </span><br><span class="line">    next_consumed = buffer[out];</span><br><span class="line">    out = (out + <span class="number">1</span>) % BUFFER_SIZE;</span><br><span class="line">    count--;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* consume the item in next_consumed */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Producer中的<code>count++</code>會在硬體中表現為下列的式子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">register1 = count</span><br><span class="line">register1 = register1 + 1</span><br><span class="line">count = register1</span><br></pre></td></tr></table></figure></p>
+<p>Consumer中的<code>count--</code>會在硬體中表現為下列的式子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">register2 = count</span><br><span class="line">register2 = register2 - 1</span><br><span class="line">count = register2</span><br></pre></td></tr></table></figure></p>
+<h2 id="Race-Condition"><a href="#Race-Condition" class="headerlink" title="Race Condition"></a>Race Condition</h2><p>當兩個Process一起運作上面的code，就有可能導致同時修改count的情況，這情況稱為race condition。<br>|Time|Process|   |Operation|Value|<br>|—-|—-|—-|—-|—-|<br>|T0|producer|execute|register1 = count|{register1=5}|<br>|T1|producer|execute|register1 = register1 + 1|{register1=6}|<br>|T2|consume|execute|register2 = count|{register2=5}|<br>|T3|consume|execute|register2 = register2 - 1|{register2=4}|<br>|T4|producer|execute|count = register1|{count=6}|<br>|T5|consume|execute|count = register2|{count=4}|</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-TW">
     <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/10/30/hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -305,16 +778,12 @@
       
           <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
 <h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
 <p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
 <h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
 <p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
 <h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
 <p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
 <h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
 <p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
 
       
@@ -378,7 +847,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
