@@ -50,15 +50,15 @@
   };
 </script>
 
-  <meta name="description" content="The Critical-Section Problem考慮到某一個系統中有n個Process，它們的程式中有一部份中程式碼稱為Critical Section，這個資源可能被其它的Process存取、修改。Critical Section Problem的目的是設計一個協議，使得Process可以同步它們的活動，使得資料可以在不同的Process中分享。">
+  <meta name="description" content="The Critical-Section Problem 考慮到某一個系統中有n個Process，它們的程式中有一部份中程式碼稱為Critical Section，這個資源可能被其它的Process存取、修改。Critical Section Problem的目的是設計一個協議，使得Process可以同步它們的活動，使得資料可以在不同的Process中分享。">
 <meta name="keywords" content="Process Synchronization,Operating System">
 <meta property="og:type" content="article">
 <meta property="og:title" content="note-OS-6.2 The Critical-Section Problem">
 <meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;10&#x2F;30&#x2F;note-OS-6-2&#x2F;index.html">
 <meta property="og:site_name" content="weifang&#39;s note">
-<meta property="og:description" content="The Critical-Section Problem考慮到某一個系統中有n個Process，它們的程式中有一部份中程式碼稱為Critical Section，這個資源可能被其它的Process存取、修改。Critical Section Problem的目的是設計一個協議，使得Process可以同步它們的活動，使得資料可以在不同的Process中分享。">
+<meta property="og:description" content="The Critical-Section Problem 考慮到某一個系統中有n個Process，它們的程式中有一部份中程式碼稱為Critical Section，這個資源可能被其它的Process存取、修改。Critical Section Problem的目的是設計一個協議，使得Process可以同步它們的活動，使得資料可以在不同的Process中分享。">
 <meta property="og:locale" content="zh-TW">
-<meta property="og:updated_time" content="2019-11-09T15:04:43.731Z">
+<meta property="og:updated_time" content="2019-11-10T04:33:30.715Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://rweifang.github.io/2019/10/30/note-OS-6-2/">
@@ -219,7 +219,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2019-11-09 23:04:43" itemprop="dateModified" datetime="2019-11-09T23:04:43+08:00">2019-11-09</time>
+                <time title="修改時間：2019-11-10 12:33:30" itemprop="dateModified" datetime="2019-11-10T12:33:30+08:00">2019-11-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -258,17 +258,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="The-Critical-Section-Problem"><a href="#The-Critical-Section-Problem" class="headerlink" title="The Critical-Section Problem"></a>The Critical-Section Problem</h1><p>考慮到某一個系統中有n個Process，它們的程式中有一部份中程式碼稱為Critical Section，這個資源可能被其它的Process存取、修改。Critical Section Problem的目的是設計一個協議，使得Process可以同步它們的活動，使得資料可以在不同的Process中分享。</p>
+        <h1 id="the-critical-section-problem">The Critical-Section Problem</h1>
+<p>考慮到某一個系統中有n個Process，它們的程式中有一部份中程式碼稱為Critical Section，這個資源可能被其它的Process存取、修改。Critical Section Problem的目的是設計一個協議，使得Process可以同步它們的活動，使得資料可以在不同的Process中分享。</p>
 <a id="more"></a>
-<p>一個普遍的Process有著下面的結構，包含Initialize, Entry Section, Critical Section, Exit Section, Remainder Section。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    <span class="comment">// Some arbitrary code (such as initialization).</span></span><br><span class="line"></span><br><span class="line">    EnterCriticalSection(cs);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// The code that constitutes the CS.</span></span><br><span class="line">    <span class="comment">// Only one process can be executing this code at the same time. </span></span><br><span class="line"></span><br><span class="line">    LeaveCriticalSection(cs);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Some arbitrary code. This is called the remainder section.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="A-solution-to-the-critical-section-Problem"><a href="#A-solution-to-the-critical-section-Problem" class="headerlink" title="A solution to the critical section Problem"></a>A solution to the critical section Problem</h2><p>Critical section的解需要滿足下列三個條件</p>
-<ol>
+<p>一個普遍的Process有著下面的結構，包含Initialize, Entry Section, Critical Section, Exit Section, Remainder Section。 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    <span class="comment">// Some arbitrary code (such as initialization).</span></span><br><span class="line"></span><br><span class="line">    EnterCriticalSection(cs);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// The code that constitutes the CS.</span></span><br><span class="line">    <span class="comment">// Only one process can be executing this code at the same time. </span></span><br><span class="line"></span><br><span class="line">    LeaveCriticalSection(cs);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Some arbitrary code. This is called the remainder section.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="a-solution-to-the-critical-section-problem">A solution to the critical section Problem</h2>
+<p>Critical section的解需要滿足下列三個條件</p>
+<ol type="1">
 <li><strong>Mutual exclusion</strong> 當某一個Process正在critical section中時，其它的Process不能進入、運作在Critical Section。</li>
 <li><strong>Progress</strong> 當沒有Process在critical section，而且有Process想要進入critical section。只有還沒進入remainder section的Process可以還擇誰可以進入critical section。這選擇不能被無止盡的延後，deadlock會違反這個條件。</li>
 <li><strong>Bounded waiting</strong> 必須確定對於任何一個已經請求但還沒進人critical section的Process，最後都有機會可以進入critical section。舉例來說，使用stack決定進入的順序就違反。</li>
 </ol>
-<h2 id="untitled"><a href="#untitled" class="headerlink" title="untitled"></a>untitled</h2><p>如果在單核心系統中，透過在修改共用變數時禁止interrupt的發生，可以避免the critical section problem。<br>在多核心系統中，有不同的方法去處理preemptive kernels與nonpreemptive kernels中的這個問題。對於nonpreemptive kernels，可以直接限制一次只執行一個Process來避免critical section problem，但nonpreemptive kernels容易導致效能低落。<br>對於preemptive kernels的解法會在後面的章節敘述。</p>
-<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><ol>
+<h2 id="note">Note</h2>
+<p>如果在單核心系統中，透過在修改共用變數時禁止interrupt的發生，可以避免the critical section problem。 在多核心系統中，有不同的方法去處理preemptive kernels與nonpreemptive kernels中的這個問題。對於nonpreemptive kernels，可以直接限制一次只執行一個Process來避免critical section problem，但nonpreemptive kernels容易導致效能低落。 對於preemptive kernels的解法會在後面的章節敘述。</p>
+<h2 id="參考資料">參考資料</h2>
+<ol type="1">
 <li><a href="https://stackoverflow.com/questions/33143779/what-is-progress-and-bounded-waiting-in-critical-section/33409854" target="_blank" rel="noopener">What is progress and bounded waiting in critical section?</a></li>
 </ol>
 
@@ -344,7 +348,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#The-Critical-Section-Problem"><span class="nav-number">1.</span> <span class="nav-text">The Critical-Section Problem</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#A-solution-to-the-critical-section-Problem"><span class="nav-number">1.1.</span> <span class="nav-text">A solution to the critical section Problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#untitled"><span class="nav-number">1.2.</span> <span class="nav-text">untitled</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#參考資料"><span class="nav-number">1.3.</span> <span class="nav-text">參考資料</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#the-critical-section-problem"><span class="nav-number">1.</span> <span class="nav-text">The Critical-Section Problem</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a-solution-to-the-critical-section-problem"><span class="nav-number">1.1.</span> <span class="nav-text">A solution to the critical section Problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#note"><span class="nav-number">1.2.</span> <span class="nav-text">Note</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#參考資料"><span class="nav-number">1.3.</span> <span class="nav-text">參考資料</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -360,7 +364,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">15</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -373,7 +377,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
@@ -479,6 +483,8 @@ show_date_time();
 
 
 
+
+  
 
   
 

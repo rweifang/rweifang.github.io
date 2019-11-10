@@ -50,18 +50,21 @@
   };
 </script>
 
-  <meta name="description" content="Semaphores Semaphore是一個整數的變數，可以透過wait(), signal()來使用它，必須注意的是wait(), signal()要是atomically的運作，也就是無法被超過一個以上的process同時修改數值。">
-<meta name="keywords" content="Process Synchronization,Operating System">
+  <meta name="description" content="Deadlock CharacterizationNecessary Conditions只有在下列四個條件都成立時，deadlock才會發生。 Mutual exclusion 至少有一個不可分享的資源，也就是一次只有一個thread可以使用這個資源。 Hold and wait 當某一個thread持有一個資源，並且等待另一個資源的釋放。 No preemption 資源只能被自願的釋放，不能">
+<meta name="keywords" content="Operating System,Deadlock">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Note-OS-6.6 Semaphores">
-<meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;11&#x2F;09&#x2F;note-OS-6-6&#x2F;index.html">
+<meta property="og:title" content="Note-OS-8.3 Deadlock Characterization">
+<meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;11&#x2F;10&#x2F;note-OS-8-3&#x2F;index.html">
 <meta property="og:site_name" content="weifang&#39;s note">
-<meta property="og:description" content="Semaphores Semaphore是一個整數的變數，可以透過wait(), signal()來使用它，必須注意的是wait(), signal()要是atomically的運作，也就是無法被超過一個以上的process同時修改數值。">
+<meta property="og:description" content="Deadlock CharacterizationNecessary Conditions只有在下列四個條件都成立時，deadlock才會發生。 Mutual exclusion 至少有一個不可分享的資源，也就是一次只有一個thread可以使用這個資源。 Hold and wait 當某一個thread持有一個資源，並且等待另一個資源的釋放。 No preemption 資源只能被自願的釋放，不能">
 <meta property="og:locale" content="zh-TW">
-<meta property="og:updated_time" content="2019-11-10T04:34:18.095Z">
+<meta property="og:image" content="https:&#x2F;&#x2F;imgur.com&#x2F;WM1VS96.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;imgur.com&#x2F;YDnZOgh.jpg">
+<meta property="og:updated_time" content="2019-11-10T04:29:59.507Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;imgur.com&#x2F;WM1VS96.jpg">
 
-<link rel="canonical" href="http://rweifang.github.io/2019/11/09/note-OS-6-6/">
+<link rel="canonical" href="http://rweifang.github.io/2019/11/10/note-OS-8-3/">
 
 
 <script id="page-configurations">
@@ -75,7 +78,7 @@
   };
 </script>
 
-  <title>Note-OS-6.6 Semaphores | weifang's note</title>
+  <title>Note-OS-8.3 Deadlock Characterization | weifang's note</title>
   
 
 
@@ -189,7 +192,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/11/09/note-OS-6-6/">
+    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/11/10/note-OS-8-3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -202,7 +205,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Note-OS-6.6 Semaphores
+          Note-OS-8.3 Deadlock Characterization
         </h1>
 
         <div class="post-meta">
@@ -211,16 +214,10 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">發表於</span>
+              
 
-              <time title="創建時間：2019-11-09 22:22:08" itemprop="dateCreated datePublished" datetime="2019-11-09T22:22:08+08:00">2019-11-09</time>
+              <time title="創建時間：2019-11-10 11:30:54 / 修改時間：12:29:59" itemprop="dateCreated datePublished" datetime="2019-11-10T11:30:54+08:00">2019-11-10</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2019-11-10 12:34:18" itemprop="dateModified" datetime="2019-11-10T12:34:18+08:00">2019-11-10</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -242,8 +239,8 @@
       </span>
       <span class="post-meta-item-text">Disqus：</span>
     
-    <a title="disqus" href="/2019/11/09/note-OS-6-6/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/11/09/note-OS-6-6/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2019/11/10/note-OS-8-3/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/11/10/note-OS-8-3/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -258,20 +255,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="semaphores">Semaphores</h1>
-<p>Semaphore是一個整數的變數，可以透過wait(), signal()來使用它，必須注意的是wait(), signal()要是atomically的運作，也就是無法被超過一個以上的process同時修改數值。</p>
-<a id="more"></a>
-<p>The definition of wait() and signal() <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">wait(S) &#123;</span><br><span class="line">    <span class="keyword">while</span> (S &lt;= <span class="number">0</span>)</span><br><span class="line">        ; <span class="comment">// busy wait</span></span><br><span class="line">    S--;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">signal(S) &#123;</span><br><span class="line">    S++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="semaphores-usage">Semaphores Usage</h2>
-<h3 id="counting-semaphore">counting semaphore</h3>
-<p>Counting semaphore的數值沒有限制，它可以用來將資源的存取權給予有限數量的process。</p>
-<h3 id="binary-semaphore">binary semaphore</h3>
-<p>當semaphore的值只有0, 1時，稱為binary semaphore，可以當作mutex lock來使用。</p>
-<h3 id="synchronization">synchronization</h3>
-<p>Semaphore也可以用來同步process。以下面兩個statemen S1,S2及process P1,P2舉例，當P1的S1結束後，才會開始P2的S2。</p>
-<p>Process P1 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">S1;</span><br><span class="line">signal(synch);</span><br></pre></td></tr></table></figure> Process P2 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wait(synch);</span><br><span class="line">S2;</span><br></pre></td></tr></table></figure></p>
-<h2 id="semaphores-implementation">Semaphores Implementation</h2>
-<p>下面定義了semaphore的結構，其中包含了一個計數器和記錄process的list。 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> value;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">process</span> *<span class="title">list</span>;</span></span><br><span class="line">&#125;semaphore;</span><br><span class="line"></span><br><span class="line">wait(semaphore *S)&#123;</span><br><span class="line">    S-&gt;value--;</span><br><span class="line">    <span class="keyword">if</span> (S-&gt;value &lt;<span class="number">0</span>) &#123;</span><br><span class="line">        add <span class="keyword">this</span> process to S-&gt;<span class="built_in">list</span>;</span><br><span class="line">        sleep();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">signal(semaphore *S)&#123;</span><br><span class="line">    S-&gt;value++;</span><br><span class="line">    <span class="keyword">if</span> (S-&gt;value &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        remove a process P from S-&gt;<span class="built_in">list</span>;</span><br><span class="line">        wakeup(P);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 在SMP系統中，為了避免禁止interrupt導致後續的效能低落，必須提供compare_and_swap()或是spinlock的方式，確保<code>wait()</code>跟<code>signal()</code>可以atomically運作。</p>
+        <h1 id="deadlock-characterization">Deadlock Characterization</h1><h2 id="necessary-conditions">Necessary Conditions</h2><p>只有在下列四個條件都成立時，deadlock才會發生。</p><ol type="1">
+<li><strong>Mutual exclusion</strong> 至少有一個不可分享的資源，也就是一次只有一個thread可以使用這個資源。</li>
+<li><strong>Hold and wait</strong> 當某一個thread持有一個資源，並且等待另一個資源的釋放。</li>
+<li><strong>No preemption</strong> 資源只能被自願的釋放，不能被其它thread搶走。</li>
+<li><strong>Circular wait</strong> 當一組thread <span class="math inline">\(T=\{T_0,T_1,...,T_n\}\)</span>，<span class="math inline">\(T_0\)</span>等待<span class="math inline">\(T_1\)</span>釋放資源，<span class="math inline">\(T_1\)</span>等待<span class="math inline">\(T_2\)</span>，…，而<span class="math inline">\(T_{n-1}\)</span>等待<span class="math inline">\(T_n\)</span>，<span class="math inline">\(T_n\)</span>等待<span class="math inline">\(T_0\)</span>釋放資源。</li>
+</ol><a id="more"></a>
+
+
+
+<h2 id="resource-allocation-graph">Resource-Allocation Graph</h2>
+<p>系統資源的分配可以用directed graph來表示，稱為system resource-allocation graph。 Vertices可以分為兩種，T代表thread，R代表Resource。而Edge也可以分為兩種，<span class="math inline">\(T_i→R_i\)</span>的request edge以及<span class="math inline">\(R_i→T_i\)</span>的assignment edge。</p>
+<p><img src="https://imgur.com/WM1VS96.jpg" alt="id"> 在這個graph中，包含了兩個cycle，可以觀察得知現在為deadlock state。 <span class="math inline">\(T_1→R_1→T_2→R_3→T_3→R_2→T_1\)</span> <span class="math inline">\(T_2→R_3→T_3→R_2→T_2\)</span></p>
+<p><img src="https://imgur.com/YDnZOgh.jpg" alt="id"> 上面這張圖中，雖然有cycle存在，但並沒有發生deadlock。</p>
+<p>總而言之，沒有cycle存在就一定不是deadlock state，但是有cycle不一定是deadlock。</p>
 
     </div>
 
@@ -281,24 +278,24 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Process-Synchronization/" rel="tag"># Process Synchronization</a>
               <a href="/tags/Operating-System/" rel="tag"># Operating System</a>
+              <a href="/tags/Deadlock/" rel="tag"># Deadlock</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
-                <a href="/2019/11/09/note-OS-6-5/" rel="next" title="Note-OS-6.5 Mutex Locks">
-                  <i class="fa fa-chevron-left"></i> Note-OS-6.5 Mutex Locks
+                <a href="/2019/11/10/note-OS-8-2/" rel="next" title="Note-OS-8.2 Deadlock in Multithreaded Applications">
+                  <i class="fa fa-chevron-left"></i> Note-OS-8.2 Deadlock in Multithreaded Applications
                 </a>
             </div>
 
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-                <a href="/2019/11/09/note-OS-6-7/" rel="prev" title="Note-OS-6.7 Monitors">
-                  Note-OS-6.7 Monitors <i class="fa fa-chevron-right"></i>
+                <a href="/2019/11/10/note-OS-8-4/" rel="prev" title="Note-OS-8.4 Method for Handling Deadlocks">
+                  Note-OS-8.4 Method for Handling Deadlocks <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -345,7 +342,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#semaphores"><span class="nav-number">1.</span> <span class="nav-text">Semaphores</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#semaphores-usage"><span class="nav-number">1.1.</span> <span class="nav-text">Semaphores Usage</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#counting-semaphore"><span class="nav-number">1.1.1.</span> <span class="nav-text">counting semaphore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#binary-semaphore"><span class="nav-number">1.1.2.</span> <span class="nav-text">binary semaphore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#synchronization"><span class="nav-number">1.1.3.</span> <span class="nav-text">synchronization</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#semaphores-implementation"><span class="nav-number">1.2.</span> <span class="nav-text">Semaphores Implementation</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#deadlock-characterization"><span class="nav-number">1.</span> <span class="nav-text">Deadlock Characterization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#necessary-conditions"><span class="nav-number">1.1.</span> <span class="nav-text">Necessary Conditions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#resource-allocation-graph"><span class="nav-number">1.2.</span> <span class="nav-text">Resource-Allocation Graph</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -484,6 +481,54 @@ show_date_time();
   
 
   
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
 
   
 
@@ -503,9 +548,9 @@ show_date_time();
       DISQUS.reset({
         reload: true,
         config: {page: {
-            url: "http://rweifang.github.io/2019/11/09/note-OS-6-6/",
-            identifier: "2019/11/09/note-OS-6-6/",
-            title: "Note-OS-6.6 Semaphores"
+            url: "http://rweifang.github.io/2019/11/10/note-OS-8-3/",
+            identifier: "2019/11/10/note-OS-8-3/",
+            title: "Note-OS-8.3 Deadlock Characterization"
           }
         }
       });
