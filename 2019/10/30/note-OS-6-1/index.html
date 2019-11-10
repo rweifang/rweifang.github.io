@@ -50,13 +50,13 @@
   };
 </script>
 
-  <meta name="description" content="Background 我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。 ## Producer-Consumer Problem Producer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：">
+  <meta name="description" content="Background我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。 Producer-Consumer ProblemProducer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：">
 <meta name="keywords" content="Process Synchronization,Operating System">
 <meta property="og:type" content="article">
 <meta property="og:title" content="note-OS-6.1 Background">
 <meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;10&#x2F;30&#x2F;note-OS-6-1&#x2F;index.html">
 <meta property="og:site_name" content="weifang&#39;s note">
-<meta property="og:description" content="Background 我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。 ## Producer-Consumer Problem Producer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：">
+<meta property="og:description" content="Background我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。 Producer-Consumer ProblemProducer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：">
 <meta property="og:locale" content="zh-TW">
 <meta property="og:updated_time" content="2019-11-10T03:06:21.279Z">
 <meta name="twitter:card" content="summary">
@@ -258,18 +258,18 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="background">Background</h1>
-<p>我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。 ## Producer-Consumer Problem Producer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：</p>
+        <h1 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h1><p>我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。</p>
+<h2 id="Producer-Consumer-Problem"><a href="#Producer-Consumer-Problem" class="headerlink" title="Producer-Consumer Problem"></a>Producer-Consumer Problem</h2><p>Producer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：</p>
 <a id="more"></a>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="comment">/* produce an item in next_produced */</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span> (count == BUFFER_SIZE)</span><br><span class="line">        ;</span><br><span class="line">    </span><br><span class="line">    buffer[in] = next_produced;</span><br><span class="line">    in = (in + <span class="number">1</span>) % BUFFER_SIZE;</span><br><span class="line">    count++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">while</span> (count == <span class="number">0</span>)</span><br><span class="line">        ;</span><br><span class="line">    </span><br><span class="line">    next_consumed = buffer[out];</span><br><span class="line">    out = (out + <span class="number">1</span>) % BUFFER_SIZE;</span><br><span class="line">    count--;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* consume the item in next_consumed */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Producer中的<code>count++</code>會在硬體中表現為下列的式子： <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">register1 = count</span><br><span class="line">register1 = register1 + 1</span><br><span class="line">count = register1</span><br></pre></td></tr></table></figure></p>
-<p>Consumer中的<code>count--</code>會在硬體中表現為下列的式子 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">register2 = count</span><br><span class="line">register2 = register2 - 1</span><br><span class="line">count = register2</span><br></pre></td></tr></table></figure></p>
-<h2 id="race-condition">Race Condition</h2>
-<p>當兩個Process一起運作上面的code，就有可能導致同時修改count的情況，這情況稱為race condition。</p>
+<p>Producer中的<code>count++</code>會在硬體中表現為下列的式子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">register1 = count</span><br><span class="line">register1 = register1 + 1</span><br><span class="line">count = register1</span><br></pre></td></tr></table></figure></p>
+<p>Consumer中的<code>count--</code>會在硬體中表現為下列的式子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">register2 = count</span><br><span class="line">register2 = register2 - 1</span><br><span class="line">count = register2</span><br></pre></td></tr></table></figure></p>
+<h2 id="Race-Condition"><a href="#Race-Condition" class="headerlink" title="Race Condition"></a>Race Condition</h2><p>當兩個Process一起運作上面的code，就有可能導致同時修改count的情況，這情況稱為race condition。</p>
+<div class="table-container">
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>Time</th>
 <th>Process</th>
 <th>Operation</th>
@@ -277,37 +277,37 @@
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>T0</td>
 <td>producer</td>
 <td>register1 = count</td>
 <td>{register1=5}</td>
 </tr>
-<tr class="even">
+<tr>
 <td>T1</td>
 <td>producer</td>
 <td>register1 = register1 + 1</td>
 <td>{register1=6}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>T2</td>
 <td>consume</td>
 <td>register2 = count</td>
 <td>{register2=5}</td>
 </tr>
-<tr class="even">
+<tr>
 <td>T3</td>
 <td>consume</td>
 <td>register2 = register2 - 1</td>
 <td>{register2=4}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>T4</td>
 <td>producer</td>
 <td>count = register1</td>
 <td>{count=6}</td>
 </tr>
-<tr class="even">
+<tr>
 <td>T5</td>
 <td>consume</td>
 <td>count = register2</td>
@@ -315,6 +315,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 
     </div>
 
@@ -388,7 +389,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#background"><span class="nav-number">1.</span> <span class="nav-text">Background</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#race-condition"><span class="nav-number">1.1.</span> <span class="nav-text">Race Condition</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Background"><span class="nav-number">1.</span> <span class="nav-text">Background</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Producer-Consumer-Problem"><span class="nav-number">1.1.</span> <span class="nav-text">Producer-Consumer Problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Race-Condition"><span class="nav-number">1.2.</span> <span class="nav-text">Race Condition</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -404,7 +405,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>

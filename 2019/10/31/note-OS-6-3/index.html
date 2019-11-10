@@ -50,13 +50,13 @@
   };
 </script>
 
-  <meta name="description" content="Peterson&amp;apos;s Solution Peterson&amp;apos;s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。">
+  <meta name="description" content="Peterson’s SolutionPeterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。">
 <meta name="keywords" content="Process Synchronization,Operating System">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Note-OS-6.3 Perterson&#39;s Solution">
 <meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;10&#x2F;31&#x2F;note-OS-6-3&#x2F;index.html">
 <meta property="og:site_name" content="weifang&#39;s note">
-<meta property="og:description" content="Peterson&amp;apos;s Solution Peterson&amp;apos;s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。">
+<meta property="og:description" content="Peterson’s SolutionPeterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。">
 <meta property="og:locale" content="zh-TW">
 <meta property="og:image" content="https:&#x2F;&#x2F;imgur.com&#x2F;d4Nheuh.jpg">
 <meta property="og:updated_time" content="2019-11-10T04:33:41.219Z">
@@ -260,16 +260,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="petersons-solution">Peterson's Solution</h2>
-<p>Peterson's Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。</p>
+        <h2 id="Peterson’s-Solution"><a href="#Peterson’s-Solution" class="headerlink" title="Peterson’s Solution"></a>Peterson’s Solution</h2><p>Peterson’s Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。</p>
 <a id="more"></a>
 <p>以下程式碼中，用i, j兩個變數來表示兩個不同的process。</p>
-<h3 id="兩個process的共用變數">兩個process的共用變數</h3>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> turn;</span><br><span class="line">boolean flag[<span class="number">2</span>];</span><br></pre></td></tr></table></figure>
-<h3 id="process-pi-的程式碼">Process Pi 的程式碼</h3>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    flag[i] = <span class="literal">true</span>;             <span class="comment">// request for critical-section</span></span><br><span class="line">    turn = j;                   <span class="comment">// give priority to another process</span></span><br><span class="line">    <span class="keyword">while</span> (flag[j] &amp;&amp; turn == j)</span><br><span class="line">        ;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// critical section</span></span><br><span class="line"></span><br><span class="line">        flag[i] = <span class="literal">false</span>;        <span class="comment">// cancel the request</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// remainder section</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="intruction-reordering">Intruction Reordering</h3>
-<p>Reordering 調整了Load, Store的順序。下圖可以看到在Peterson's Solution中，如果做了Instruciton Reordering會導致兩個Process一起進入Critical Section。 <img src="https://imgur.com/d4Nheuh.jpg" title="The effect of instruction reordering in Peterson&#39;s solution" alt="Alt text" /></p>
+<h3 id="兩個process的共用變數"><a href="#兩個process的共用變數" class="headerlink" title="兩個process的共用變數"></a>兩個process的共用變數</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> turn;</span><br><span class="line">boolean flag[<span class="number">2</span>];</span><br></pre></td></tr></table></figure>
+<h3 id="Process-Pi-的程式碼"><a href="#Process-Pi-的程式碼" class="headerlink" title="Process Pi 的程式碼"></a>Process Pi 的程式碼</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">    flag[i] = <span class="literal">true</span>;             <span class="comment">// request for critical-section</span></span><br><span class="line">    turn = j;                   <span class="comment">// give priority to another process</span></span><br><span class="line">    <span class="keyword">while</span> (flag[j] &amp;&amp; turn == j)</span><br><span class="line">        ;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// critical section</span></span><br><span class="line"></span><br><span class="line">        flag[i] = <span class="literal">false</span>;        <span class="comment">// cancel the request</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// remainder section</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Intruction-Reordering"><a href="#Intruction-Reordering" class="headerlink" title="Intruction Reordering"></a>Intruction Reordering</h3><p>Reordering 調整了Load, Store的順序。下圖可以看到在Peterson’s Solution中，如果做了Instruciton Reordering會導致兩個Process一起進入Critical Section。<br><img src="https://imgur.com/d4Nheuh.jpg" alt="Alt text" title="The effect of instruction reordering in Peterson&#39;s solution"></p>
 
     </div>
 
@@ -343,7 +339,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#petersons-solution"><span class="nav-number">1.</span> <span class="nav-text">Peterson&#39;s Solution</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#兩個process的共用變數"><span class="nav-number">1.1.</span> <span class="nav-text">兩個process的共用變數</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#process-pi-的程式碼"><span class="nav-number">1.2.</span> <span class="nav-text">Process Pi 的程式碼</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#intruction-reordering"><span class="nav-number">1.3.</span> <span class="nav-text">Intruction Reordering</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Peterson’s-Solution"><span class="nav-number">1.</span> <span class="nav-text">Peterson’s Solution</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#兩個process的共用變數"><span class="nav-number">1.1.</span> <span class="nav-text">兩個process的共用變數</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Process-Pi-的程式碼"><span class="nav-number">1.2.</span> <span class="nav-text">Process Pi 的程式碼</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Intruction-Reordering"><span class="nav-number">1.3.</span> <span class="nav-text">Intruction Reordering</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -359,7 +355,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>

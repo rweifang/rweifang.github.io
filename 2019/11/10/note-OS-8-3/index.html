@@ -255,19 +255,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="deadlock-characterization">Deadlock Characterization</h1><h2 id="necessary-conditions">Necessary Conditions</h2><p>只有在下列四個條件都成立時，deadlock才會發生。</p><ol type="1">
+        <h1 id="Deadlock-Characterization"><a href="#Deadlock-Characterization" class="headerlink" title="Deadlock Characterization"></a>Deadlock Characterization</h1><h2 id="Necessary-Conditions"><a href="#Necessary-Conditions" class="headerlink" title="Necessary Conditions"></a>Necessary Conditions</h2><p>只有在下列四個條件都成立時，deadlock才會發生。</p><ol>
 <li><strong>Mutual exclusion</strong> 至少有一個不可分享的資源，也就是一次只有一個thread可以使用這個資源。</li>
 <li><strong>Hold and wait</strong> 當某一個thread持有一個資源，並且等待另一個資源的釋放。</li>
 <li><strong>No preemption</strong> 資源只能被自願的釋放，不能被其它thread搶走。</li>
-<li><strong>Circular wait</strong> 當一組thread <span class="math inline">\(T=\{T_0,T_1,...,T_n\}\)</span>，<span class="math inline">\(T_0\)</span>等待<span class="math inline">\(T_1\)</span>釋放資源，<span class="math inline">\(T_1\)</span>等待<span class="math inline">\(T_2\)</span>，…，而<span class="math inline">\(T_{n-1}\)</span>等待<span class="math inline">\(T_n\)</span>，<span class="math inline">\(T_n\)</span>等待<span class="math inline">\(T_0\)</span>釋放資源。</li>
+<li><strong>Circular wait</strong> 當一組thread $T={T<em>0,T_1,…,T_n}$，$T_0$等待$T_1$釋放資源，$T_1$等待$T_2$，…，而$T</em>{n-1}$等待$T_n$，$T_n$等待$T_0$釋放資源。</li>
 </ol><a id="more"></a>
 
-
-
-<h2 id="resource-allocation-graph">Resource-Allocation Graph</h2>
-<p>系統資源的分配可以用directed graph來表示，稱為system resource-allocation graph。 Vertices可以分為兩種，T代表thread，R代表Resource。而Edge也可以分為兩種，<span class="math inline">\(T_i→R_i\)</span>的request edge以及<span class="math inline">\(R_i→T_i\)</span>的assignment edge。</p>
-<p><img src="https://imgur.com/WM1VS96.jpg" alt="id"> 在這個graph中，包含了兩個cycle，可以觀察得知現在為deadlock state。 <span class="math inline">\(T_1→R_1→T_2→R_3→T_3→R_2→T_1\)</span> <span class="math inline">\(T_2→R_3→T_3→R_2→T_2\)</span></p>
-<p><img src="https://imgur.com/YDnZOgh.jpg" alt="id"> 上面這張圖中，雖然有cycle存在，但並沒有發生deadlock。</p>
+<h2 id="Resource-Allocation-Graph"><a href="#Resource-Allocation-Graph" class="headerlink" title="Resource-Allocation Graph"></a>Resource-Allocation Graph</h2><p>系統資源的分配可以用directed graph來表示，稱為system resource-allocation graph。<br>Vertices可以分為兩種，T代表thread，R代表Resource。而Edge也可以分為兩種，$T_i→R_i$的request edge以及$R_i→T_i$的assignment edge。</p>
+<p><img src="https://imgur.com/WM1VS96.jpg" alt="id"><br>在這個graph中，包含了兩個cycle，可以觀察得知現在為deadlock state。<br>$T_1→R_1→T_2→R_3→T_3→R_2→T_1$<br>$T_2→R_3→T_3→R_2→T_2$</p>
+<p><img src="https://imgur.com/YDnZOgh.jpg" alt="id"><br>上面這張圖中，雖然有cycle存在，但並沒有發生deadlock。</p>
 <p>總而言之，沒有cycle存在就一定不是deadlock state，但是有cycle不一定是deadlock。</p>
 
     </div>
@@ -342,7 +339,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#deadlock-characterization"><span class="nav-number">1.</span> <span class="nav-text">Deadlock Characterization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#necessary-conditions"><span class="nav-number">1.1.</span> <span class="nav-text">Necessary Conditions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#resource-allocation-graph"><span class="nav-number">1.2.</span> <span class="nav-text">Resource-Allocation Graph</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Deadlock-Characterization"><span class="nav-number">1.</span> <span class="nav-text">Deadlock Characterization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Necessary-Conditions"><span class="nav-number">1.1.</span> <span class="nav-text">Necessary Conditions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Resource-Allocation-Graph"><span class="nav-number">1.2.</span> <span class="nav-text">Resource-Allocation Graph</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -358,7 +355,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>

@@ -185,198 +185,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/11/09/note-OS-6-4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Wei-Hao Fang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="weifang's note">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/09/note-OS-6-4/" class="post-title-link" itemprop="url">Note-OS-6.4 Hardware Support for Synchronization</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">發表於</span>
-              
-
-              <time title="創建時間：2019-11-09 22:20:42 / 修改時間：23:04:45" itemprop="dateCreated datePublished" datetime="2019-11-09T22:20:42+08:00">2019-11-09</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分類於</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Operating-System/" itemprop="url" rel="index">
-                    <span itemprop="name">Operating System</span>
-                  </a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2019/11/09/note-OS-6-4/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/11/09/note-OS-6-4/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="hardware-support-for-synchronization">Hardware Support for Synchronization</h1>
-<h2 id="memory-barrier">Memory Barrier</h2>
-<p>電腦架構中的memory model大致上可以分為下列兩種 1. <strong>Strongly ordered</strong>, 在某一個處理器中做修改記憶體的值，會立刻更新到其它處理器。 2. <strong>Weakly ordered</strong>, 在某一個處理器中做修改記憶體的值，不會立刻更新到其它處理器。</p>
-<p>Memory model隨處理器而異，有可能是Strogly ordered，也有可能是Weakly ordered。透過memory barrier或memory fences的instruction可以強制更新。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/11/09/note-OS-6-4/#more" rel="contents">
-                閱讀全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/10/31/note-OS-6-3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Wei-Hao Fang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="weifang's note">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/10/31/note-OS-6-3/" class="post-title-link" itemprop="url">Note-OS-6.3 Perterson's Solution</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">發表於</span>
-
-              <time title="創建時間：2019-10-31 23:44:37" itemprop="dateCreated datePublished" datetime="2019-10-31T23:44:37+08:00">2019-10-31</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2019-11-10 12:33:41" itemprop="dateModified" datetime="2019-11-10T12:33:41+08:00">2019-11-10</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分類於</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Operating-System/" itemprop="url" rel="index">
-                    <span itemprop="name">Operating System</span>
-                  </a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2019/10/31/note-OS-6-3/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/10/31/note-OS-6-3/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="petersons-solution">Peterson's Solution</h2>
-<p>Peterson's Solution 避免critical-section problem經典的軟體解法，但因為現今的電腦架構、編譯器可能會重新排序store, load instruction的順序，因此不能保證在這種情況也可以適用。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/10/31/note-OS-6-3/#more" rel="contents">
-                閱讀全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-TW">
     <link itemprop="mainEntityOfPage" href="http://rweifang.github.io/2019/10/30/note-OS-6-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -447,8 +255,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="the-critical-section-problem">The Critical-Section Problem</h1>
-<p>考慮到某一個系統中有n個Process，它們的程式中有一部份中程式碼稱為Critical Section，這個資源可能被其它的Process存取、修改。Critical Section Problem的目的是設計一個協議，使得Process可以同步它們的活動，使得資料可以在不同的Process中分享。</p>
+          <h1 id="The-Critical-Section-Problem"><a href="#The-Critical-Section-Problem" class="headerlink" title="The Critical-Section Problem"></a>The Critical-Section Problem</h1><p>考慮到某一個系統中有n個Process，它們的程式中有一部份中程式碼稱為Critical Section，這個資源可能被其它的Process存取、修改。Critical Section Problem的目的是設計一個協議，使得Process可以同步它們的活動，使得資料可以在不同的Process中分享。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2019/10/30/note-OS-6-2/#more" rel="contents">
@@ -545,8 +352,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="background">Background</h1>
-<p>我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。 ## Producer-Consumer Problem Producer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：</p>
+          <h1 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h1><p>我們直接透過下面介紹的Producer-Consumer Problem來說明Synchronization的重要性。</p>
+<h2 id="Producer-Consumer-Problem"><a href="#Producer-Consumer-Problem" class="headerlink" title="Producer-Consumer Problem"></a>Producer-Consumer Problem</h2><p>Producer-Consumer Problem 中包含了兩個Process，一個為Producer，另一個為Consumer，兩個Process會共用同一個buffer，具體的程式碼如下：</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2019/10/30/note-OS-6-1/#more" rel="contents">
@@ -698,7 +505,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
