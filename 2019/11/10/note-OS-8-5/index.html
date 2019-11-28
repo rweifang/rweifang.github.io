@@ -50,15 +50,15 @@
   };
 </script>
 
-  <meta name="description" content="Deadlock Prevention這裡提出一些方法，使deadlock的四種必要條件之一不會發生，進而避免deadlock的發生。Mutual Exclusion對於一個不可分享的資源來說，這個條件不可能避免。Hold and Wait避免這個條件的第一種方法是，在執行之前，一次獲得所有需要的資源。這個方法會使得資源的使用率很低。第二個方法是，必須先釋放所有資源，才可以獲得新的資源。這個方法有">
+  <meta name="description" content="Deadlock Prevention這裡提出一些方法，使deadlock的四種必要條件之一不會發生，進而避免deadlock的發生。Mutual Exclusion對於一個不可分享的資源來說，這個條件不可能避免。Hold and Wait避免這個條件的第一種方法是，在執行之前，一次獲得所有需要的資源。這個方法會使得資源的使用率很低。 第二個方法是，必須先釋放所有資源，才可以獲得新的資源。這個方法">
 <meta name="keywords" content="Operating System,Deadlock">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Note-OS-8.5 Deadlock Prevention">
 <meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;11&#x2F;10&#x2F;note-OS-8-5&#x2F;index.html">
 <meta property="og:site_name" content="weifang&#39;s note">
-<meta property="og:description" content="Deadlock Prevention這裡提出一些方法，使deadlock的四種必要條件之一不會發生，進而避免deadlock的發生。Mutual Exclusion對於一個不可分享的資源來說，這個條件不可能避免。Hold and Wait避免這個條件的第一種方法是，在執行之前，一次獲得所有需要的資源。這個方法會使得資源的使用率很低。第二個方法是，必須先釋放所有資源，才可以獲得新的資源。這個方法有">
+<meta property="og:description" content="Deadlock Prevention這裡提出一些方法，使deadlock的四種必要條件之一不會發生，進而避免deadlock的發生。Mutual Exclusion對於一個不可分享的資源來說，這個條件不可能避免。Hold and Wait避免這個條件的第一種方法是，在執行之前，一次獲得所有需要的資源。這個方法會使得資源的使用率很低。 第二個方法是，必須先釋放所有資源，才可以獲得新的資源。這個方法">
 <meta property="og:locale" content="zh-TW">
-<meta property="og:updated_time" content="2019-11-10T05:43:55.435Z">
+<meta property="og:updated_time" content="2019-11-28T08:03:17.723Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://rweifang.github.io/2019/11/10/note-OS-8-5/">
@@ -75,7 +75,7 @@
   };
 </script>
 
-  <title>Note-OS-8.5 Deadlock Prevention | weifang's note</title>
+  <title>Note-OS-8.5 Deadlock Prevention | weifang's note</title><meta name="robots" content="noindex">
   
 
 
@@ -211,10 +211,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">發表於</span>
-              
 
-              <time title="創建時間：2019-11-10 11:31:02 / 修改時間：13:43:55" itemprop="dateCreated datePublished" datetime="2019-11-10T11:31:02+08:00">2019-11-10</time>
+              <time title="創建時間：2019-11-10 11:31:02" itemprop="dateCreated datePublished" datetime="2019-11-10T11:31:02+08:00">2019-11-10</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2019-11-28 16:03:17" itemprop="dateModified" datetime="2019-11-28T16:03:17+08:00">2019-11-28</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -252,20 +258,25 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Deadlock-Prevention"><a href="#Deadlock-Prevention" class="headerlink" title="Deadlock Prevention"></a>Deadlock Prevention</h1><p>這裡提出一些方法，使deadlock的四種必要條件之一不會發生，進而避免deadlock的發生。</p><h2 id="Mutual-Exclusion"><a href="#Mutual-Exclusion" class="headerlink" title="Mutual Exclusion"></a>Mutual Exclusion</h2><p>對於一個不可分享的資源來說，這個條件不可能避免。</p><h2 id="Hold-and-Wait"><a href="#Hold-and-Wait" class="headerlink" title="Hold and Wait"></a>Hold and Wait</h2><p>避免這個條件的第一種方法是，在執行之前，一次獲得所有需要的資源。這個方法會使得資源的使用率很低。<br>第二個方法是，必須先釋放所有資源，才可以獲得新的資源。這個方法有機會導致starvation。</p><a id="more"></a>
+        <h1 id="deadlock-prevention">Deadlock Prevention</h1><p>這裡提出一些方法，使deadlock的四種必要條件之一不會發生，進而避免deadlock的發生。</p><h2 id="mutual-exclusion">Mutual Exclusion</h2><p>對於一個不可分享的資源來說，這個條件不可能避免。</p><h2 id="hold-and-wait">Hold and Wait</h2><p>避免這個條件的第一種方法是，在執行之前，一次獲得所有需要的資源。這個方法會使得資源的使用率很低。 第二個方法是，必須先釋放所有資源，才可以獲得新的資源。這個方法有機會導致starvation。</p><a id="more"></a>
 
 
-<h2 id="No-Preemption"><a href="#No-Preemption" class="headerlink" title="No Preemption"></a>No Preemption</h2><p>Process可以直接搶走waiting process所持有的資源。</p>
-<h2 id="Circular-Wait"><a href="#Circular-Wait" class="headerlink" title="Circular Wait"></a>Circular Wait</h2><ol>
+
+
+
+<h2 id="no-preemption">No Preemption</h2>
+<p>Process可以直接搶走waiting process所持有的資源。</p>
+<h2 id="circular-wait">Circular Wait</h2>
+<ol type="1">
 <li>給予所有資源不重複的編號</li>
 <li>當持有資源的最大編號為n時，只可以申請編號大於n的資源，否則要先釋放資源。</li>
 </ol>
-<p>以反證法證明：<br>存在Thread $T={T_0,T_1,…,T_n}$，以及Resource $R={R_0,R_1,…,R_n}$。</p>
-<p>當每一個$T<em>i$都在等待$R</em>{i+1}$，則$R<em>i$的編號$F(R_i)&lt;F(R</em>{i+1})$，而$F(R<em>n)&lt;F(R</em>{i+0})$。這個情況存在一個circular waiting：</p>
-<pre><code>$$F(R_0)&lt;F(R_1)&lt;...&lt;F(R_n)&lt;F(R_0)$$
-</code></pre><p>$F(R_0)&lt;F(R_0)$產生矛盾，因此假設不成立，不應存在Circular Waiting。</p>
-<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>Deadlock Prevention可以避免deadlock的發生，但會導致資源使用率下降或降低Throughput。</p>
-
+<p>以反證法證明： 存在Thread <span class="math inline">\(T={T_0,T_1,...,T_n}\)</span>，以及Resource <span class="math inline">\(R={R_0,R_1,...,R_n}\)</span>。</p>
+<p>當每一個<span class="math inline">\(T_i\)</span>都在等待<span class="math inline">\(R_{i+1}\)</span>，則<span class="math inline">\(R_i\)</span>的編號<span class="math inline">\(F(R_i)&lt;F(R_{i+1})\)</span>，而<span class="math inline">\(F(R_n)&lt;F(R_{i+0})\)</span>。這個情況存在一個circular waiting： <span class="math display">\[F(R_0)&lt;F(R_1)&lt;...&lt;F(R_n)&lt;F(R_0)\]</span></p>
+<p><span class="math inline">\(F(R_0)&lt;F(R_0)\)</span>產生矛盾，因此假設不成立，不應存在Circular Waiting。</p>
+<h2 id="summary">Summary</h2>
+<p>Deadlock Prevention可以避免deadlock的發生，但會導致資源使用率下降或降低Throughput。</p>
+<!-- flag of hidden posts -->
     </div>
 
     
@@ -280,18 +291,6 @@
 
         
 
-          <div class="post-nav">
-            <div class="post-nav-next post-nav-item">
-                <a href="/2019/11/10/note-OS-8-4/" rel="next" title="Note-OS-8.4 Method for Handling Deadlocks">
-                  <i class="fa fa-chevron-left"></i> Note-OS-8.4 Method for Handling Deadlocks
-                </a>
-            </div>
-
-            <span class="post-nav-divider"></span>
-
-            <div class="post-nav-prev post-nav-item">
-            </div>
-          </div>
       </footer>
     
   </article>
@@ -335,7 +334,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Deadlock-Prevention"><span class="nav-number">1.</span> <span class="nav-text">Deadlock Prevention</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mutual-Exclusion"><span class="nav-number">1.1.</span> <span class="nav-text">Mutual Exclusion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hold-and-Wait"><span class="nav-number">1.2.</span> <span class="nav-text">Hold and Wait</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#No-Preemption"><span class="nav-number">1.3.</span> <span class="nav-text">No Preemption</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Circular-Wait"><span class="nav-number">1.4.</span> <span class="nav-text">Circular Wait</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Summary"><span class="nav-number">1.5.</span> <span class="nav-text">Summary</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#deadlock-prevention"><span class="nav-number">1.</span> <span class="nav-text">Deadlock Prevention</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mutual-exclusion"><span class="nav-number">1.1.</span> <span class="nav-text">Mutual Exclusion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hold-and-wait"><span class="nav-number">1.2.</span> <span class="nav-text">Hold and Wait</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#no-preemption"><span class="nav-number">1.3.</span> <span class="nav-text">No Preemption</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#circular-wait"><span class="nav-number">1.4.</span> <span class="nav-text">Circular Wait</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#summary"><span class="nav-number">1.5.</span> <span class="nav-text">Summary</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -351,21 +350,9 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-count">1</span>
           <span class="site-state-item-name">文章</span>
         </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">1</span>
-        <span class="site-state-item-name">分類</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">4</span>
-        <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
 </div>

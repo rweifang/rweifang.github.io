@@ -50,15 +50,15 @@
   };
 </script>
 
-  <meta name="description" content="Classic Problems of SynchronizationThe Bounded-Buffer ProblemThe bounded-buffer problem在Section 6.1中已經被介紹過了，下面我們給了semaphore的解答1234int n;semaphore mutex = 1;semaphore empty = n;semaphore full = 0;empty">
+  <meta name="description" content="Classic Problems of Synchronization The Bounded-Buffer Problem The bounded-buffer problem在Section 6.1中已經被介紹過了，下面我們給了semaphore的解答 1234int n;semaphore mutex = 1;semaphore empty = n;semaphore full = 0; e">
 <meta name="keywords" content="Operating System,Synchronization Examples">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Note-OS-7.1 Classis Problems of Synchronization">
 <meta property="og:url" content="http:&#x2F;&#x2F;rweifang.github.io&#x2F;2019&#x2F;11&#x2F;10&#x2F;note-OS-7-1&#x2F;index.html">
 <meta property="og:site_name" content="weifang&#39;s note">
-<meta property="og:description" content="Classic Problems of SynchronizationThe Bounded-Buffer ProblemThe bounded-buffer problem在Section 6.1中已經被介紹過了，下面我們給了semaphore的解答1234int n;semaphore mutex = 1;semaphore empty = n;semaphore full = 0;empty">
+<meta property="og:description" content="Classic Problems of Synchronization The Bounded-Buffer Problem The bounded-buffer problem在Section 6.1中已經被介紹過了，下面我們給了semaphore的解答 1234int n;semaphore mutex = 1;semaphore empty = n;semaphore full = 0; e">
 <meta property="og:locale" content="zh-TW">
-<meta property="og:updated_time" content="2019-11-10T04:37:48.418Z">
+<meta property="og:updated_time" content="2019-11-28T08:03:21.003Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://rweifang.github.io/2019/11/10/note-OS-7-1/">
@@ -75,7 +75,7 @@
   };
 </script>
 
-  <title>Note-OS-7.1 Classis Problems of Synchronization | weifang's note</title>
+  <title>Note-OS-7.1 Classis Problems of Synchronization | weifang's note</title><meta name="robots" content="noindex">
   
 
 
@@ -211,10 +211,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">發表於</span>
-              
 
-              <time title="創建時間：2019-11-10 10:45:59 / 修改時間：12:37:48" itemprop="dateCreated datePublished" datetime="2019-11-10T10:45:59+08:00">2019-11-10</time>
+              <time title="創建時間：2019-11-10 10:45:59" itemprop="dateCreated datePublished" datetime="2019-11-10T10:45:59+08:00">2019-11-10</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2019-11-28 16:03:21" itemprop="dateModified" datetime="2019-11-28T16:03:21+08:00">2019-11-28</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -252,25 +258,26 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Classic-Problems-of-Synchronization"><a href="#Classic-Problems-of-Synchronization" class="headerlink" title="Classic Problems of Synchronization"></a>Classic Problems of Synchronization</h1><h2 id="The-Bounded-Buffer-Problem"><a href="#The-Bounded-Buffer-Problem" class="headerlink" title="The Bounded-Buffer Problem"></a>The Bounded-Buffer Problem</h2><p>The bounded-buffer problem在Section 6.1中已經被介紹過了，下面我們給了semaphore的解答<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> n;</span><br><span class="line">semaphore mutex = <span class="number">1</span>;</span><br><span class="line">semaphore empty = n;</span><br><span class="line">semaphore full = <span class="number">0</span>;</span><br></pre></td></tr></table></figure><br><code>empty</code>的概念就是當前剩餘的空間，<code>full</code>是目前buffer中擁有的元素數量。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="comment">/* produce an item in next_produced */</span></span><br><span class="line"></span><br><span class="line">    wait(empty);</span><br><span class="line">    wait(mutex);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* add next_produced to the buffer */</span></span><br><span class="line"></span><br><span class="line">    signal(mutex);</span><br><span class="line">    signal(full);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+        <h1 id="classic-problems-of-synchronization">Classic Problems of Synchronization</h1>
+<h2 id="the-bounded-buffer-problem">The Bounded-Buffer Problem</h2>
+<p>The bounded-buffer problem在Section 6.1中已經被介紹過了，下面我們給了semaphore的解答 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> n;</span><br><span class="line">semaphore mutex = <span class="number">1</span>;</span><br><span class="line">semaphore empty = n;</span><br><span class="line">semaphore full = <span class="number">0</span>;</span><br></pre></td></tr></table></figure> <code>empty</code>的概念就是當前剩餘的空間，<code>full</code>是目前buffer中擁有的元素數量。 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="comment">/* produce an item in next_produced */</span></span><br><span class="line"></span><br><span class="line">    wait(empty);</span><br><span class="line">    wait(mutex);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* add next_produced to the buffer */</span></span><br><span class="line"></span><br><span class="line">    signal(mutex);</span><br><span class="line">    signal(full);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    wait(full);</span><br><span class="line">    wait(mutex);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* remove an item from buffer to next_consumed */</span></span><br><span class="line"></span><br><span class="line">    signal(mutex);</span><br><span class="line">    signal(empty);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* consume the item in next_consumed */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <a id="more"></a>
-<h2 id="The-Readers-Writers-Problem"><a href="#The-Readers-Writers-Problem" class="headerlink" title="The Readers-Writers Problem"></a>The Readers-Writers Problem</h2><p>The readers-writers problem的問題是，只有一個writer可以修改資源，但如果是reader可以多個同時讀取資源。</p>
+<h2 id="the-readers-writers-problem">The Readers-Writers Problem</h2>
+<p>The readers-writers problem的問題是，只有一個writer可以修改資源，但如果是reader可以多個同時讀取資源。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">semaphore rw_mutex = <span class="number">1</span>;</span><br><span class="line">semaphore mutex = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> read_count = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-<p>writer process<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    wait(rw_mutex);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* writing is performed */</span></span><br><span class="line"></span><br><span class="line">    signal(rw_mutex);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><code>mutex</code>是用在避免<code>read_count</code>被多個process同時修改，並在第一個reader獲得或最後一個reader放棄存取權限時，要使用<code>rw_mutex</code>。<br>reader process<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    wait(mutex);</span><br><span class="line">    read_count++;</span><br><span class="line">    <span class="keyword">if</span> (read_count == <span class="number">1</span>)</span><br><span class="line">        wait(rw_mutex);</span><br><span class="line">    signal(mutex);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* reading is performed */</span></span><br><span class="line"></span><br><span class="line">    wait(mutex);</span><br><span class="line">    read_count--;</span><br><span class="line">    <span class="keyword">if</span> (read_count == <span class="number">0</span>)</span><br><span class="line">        signal(rw_mutex);</span><br><span class="line">    signal(mutex);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="The-Dining-Philosophers-Problem"><a href="#The-Dining-Philosophers-Problem" class="headerlink" title="The Dining-Philosophers Problem"></a>The Dining-Philosophers Problem</h2><p>The dining-philosophers problem是指，有五個哲學家，除了思考以外就只會吃飯。然後有一個圓型餐桌有五個位置，每個位置右前方都只有一隻筷子，想要吃飯就要同時拿起左右前方的筷子。</p>
-<h3 id="Semaphore-Solution"><a href="#Semaphore-Solution" class="headerlink" title="Semaphore Solution"></a>Semaphore Solution</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">semaphore chopstick[<span class="number">5</span>];</span><br></pre></td></tr></table></figure>
+<p>writer process <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    wait(rw_mutex);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* writing is performed */</span></span><br><span class="line"></span><br><span class="line">    signal(rw_mutex);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>mutex</code>是用在避免<code>read_count</code>被多個process同時修改，並在第一個reader獲得或最後一個reader放棄存取權限時，要使用<code>rw_mutex</code>。 reader process <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    wait(mutex);</span><br><span class="line">    read_count++;</span><br><span class="line">    <span class="keyword">if</span> (read_count == <span class="number">1</span>)</span><br><span class="line">        wait(rw_mutex);</span><br><span class="line">    signal(mutex);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* reading is performed */</span></span><br><span class="line"></span><br><span class="line">    wait(mutex);</span><br><span class="line">    read_count--;</span><br><span class="line">    <span class="keyword">if</span> (read_count == <span class="number">0</span>)</span><br><span class="line">        signal(rw_mutex);</span><br><span class="line">    signal(mutex);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="the-dining-philosophers-problem">The Dining-Philosophers Problem</h2>
+<p>The dining-philosophers problem是指，有五個哲學家，除了思考以外就只會吃飯。然後有一個圓型餐桌有五個位置，每個位置右前方都只有一隻筷子，想要吃飯就要同時拿起左右前方的筷子。</p>
+<h3 id="semaphore-solution">Semaphore Solution</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">semaphore chopstick[<span class="number">5</span>];</span><br></pre></td></tr></table></figure>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    wait(chopstick[i]);</span><br><span class="line">    wait(chopstick[(i+<span class="number">1</span>) % <span class="number">5</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* eat for a while */</span></span><br><span class="line"></span><br><span class="line">    signal(chopstick[i]);</span><br><span class="line">    signal(chopstick[(i+<span class="number">1</span>) % <span class="number">5</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* think for awhile */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在semaphore的解答中，可以確定兩個哲學家不會同時吃飯，但無法保證系統不會進入deadlock。以下給出的方法可能可以避免deadlock</p>
-<ul>
-<li>最多四個哲學家可以同時吃飯。</li>
-<li>拿起筷子時，必須同時拿起兩雙。</li>
-<li>非對稱解法 - 奇數先拿在左邊，偶數先拿右邊。</li>
-</ul>
-<h3 id="Monitor-Solution"><a href="#Monitor-Solution" class="headerlink" title="Monitor Solution"></a>Monitor Solution</h3><p>在Monitor Solution中，我們將哲學家分為三個狀態，思考、飢餓、吃飯。只有當座位左右兩邊的哲學家都沒有在吃飯時，才可以從飢餓進入到吃飯的狀態。</p>
-<p>但在這個解法中，我們並不能保證哲學家不會餓死，必須加入其它機制確保不會餓死。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">enum &#123;THINKING, HUNGRY, EATING&#125; state[5]</span><br><span class="line">condition self[5];</span><br><span class="line"></span><br><span class="line">void pickup(int i) &#123;</span><br><span class="line">    state[i] = HUNGRY;</span><br><span class="line">    test[i];</span><br><span class="line">    if (state[i] != EATING)</span><br><span class="line">        self[i].wait();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void putdown(int i) &#123;</span><br><span class="line">    state[i] = THINKING;</span><br><span class="line">    test((i + 4) % 5);</span><br><span class="line">    test((i + 1) % 5);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void test(int i) &#123;</span><br><span class="line">    if ((state[(i + 4) % 5] != EATING) &amp;&amp;</span><br><span class="line">        (state[(i + 1) % 5] != EATING) &amp;&amp;</span><br><span class="line">        (state[i] == HUNGRY)) &#123;</span><br><span class="line">            state[i] = EATING;</span><br><span class="line">            self[i].signal();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">initialzation_code() &#123;</span><br><span class="line">    for (int i = 0; i &lt; 5; i++)</span><br><span class="line">        state[i] = THINKING;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-
+<p>在semaphore的解答中，可以確定兩個哲學家不會同時吃飯，但無法保證系統不會進入deadlock。以下給出的方法可能可以避免deadlock + 最多四個哲學家可以同時吃飯。 + 拿起筷子時，必須同時拿起兩雙。 + 非對稱解法 - 奇數先拿在左邊，偶數先拿右邊。</p>
+<h3 id="monitor-solution">Monitor Solution</h3>
+<p>在Monitor Solution中，我們將哲學家分為三個狀態，思考、飢餓、吃飯。只有當座位左右兩邊的哲學家都沒有在吃飯時，才可以從飢餓進入到吃飯的狀態。</p>
+<p>但在這個解法中，我們並不能保證哲學家不會餓死，必須加入其它機制確保不會餓死。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">enum &#123;THINKING, HUNGRY, EATING&#125; state[5]</span><br><span class="line">condition self[5];</span><br><span class="line"></span><br><span class="line">void pickup(int i) &#123;</span><br><span class="line">    state[i] = HUNGRY;</span><br><span class="line">    test[i];</span><br><span class="line">    if (state[i] != EATING)</span><br><span class="line">        self[i].wait();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void putdown(int i) &#123;</span><br><span class="line">    state[i] = THINKING;</span><br><span class="line">    test((i + 4) % 5);</span><br><span class="line">    test((i + 1) % 5);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void test(int i) &#123;</span><br><span class="line">    if ((state[(i + 4) % 5] != EATING) &amp;&amp;</span><br><span class="line">        (state[(i + 1) % 5] != EATING) &amp;&amp;</span><br><span class="line">        (state[i] == HUNGRY)) &#123;</span><br><span class="line">            state[i] = EATING;</span><br><span class="line">            self[i].signal();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">initialzation_code() &#123;</span><br><span class="line">    for (int i = 0; i &lt; 5; i++)</span><br><span class="line">        state[i] = THINKING;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<!-- flag of hidden posts -->
     </div>
 
     
@@ -285,21 +292,6 @@
 
         
 
-          <div class="post-nav">
-            <div class="post-nav-next post-nav-item">
-                <a href="/2019/11/09/note-OS-6-7/" rel="next" title="Note-OS-6.7 Monitors">
-                  <i class="fa fa-chevron-left"></i> Note-OS-6.7 Monitors
-                </a>
-            </div>
-
-            <span class="post-nav-divider"></span>
-
-            <div class="post-nav-prev post-nav-item">
-                <a href="/2019/11/10/note-OS-8-2/" rel="prev" title="Note-OS-8.2 Deadlock in Multithreaded Applications">
-                  Note-OS-8.2 Deadlock in Multithreaded Applications <i class="fa fa-chevron-right"></i>
-                </a>
-            </div>
-          </div>
       </footer>
     
   </article>
@@ -343,7 +335,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Classic-Problems-of-Synchronization"><span class="nav-number">1.</span> <span class="nav-text">Classic Problems of Synchronization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#The-Bounded-Buffer-Problem"><span class="nav-number">1.1.</span> <span class="nav-text">The Bounded-Buffer Problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-Readers-Writers-Problem"><span class="nav-number">1.2.</span> <span class="nav-text">The Readers-Writers Problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-Dining-Philosophers-Problem"><span class="nav-number">1.3.</span> <span class="nav-text">The Dining-Philosophers Problem</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Semaphore-Solution"><span class="nav-number">1.3.1.</span> <span class="nav-text">Semaphore Solution</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Monitor-Solution"><span class="nav-number">1.3.2.</span> <span class="nav-text">Monitor Solution</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#classic-problems-of-synchronization"><span class="nav-number">1.</span> <span class="nav-text">Classic Problems of Synchronization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#the-bounded-buffer-problem"><span class="nav-number">1.1.</span> <span class="nav-text">The Bounded-Buffer Problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#the-readers-writers-problem"><span class="nav-number">1.2.</span> <span class="nav-text">The Readers-Writers Problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#the-dining-philosophers-problem"><span class="nav-number">1.3.</span> <span class="nav-text">The Dining-Philosophers Problem</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#semaphore-solution"><span class="nav-number">1.3.1.</span> <span class="nav-text">Semaphore Solution</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#monitor-solution"><span class="nav-number">1.3.2.</span> <span class="nav-text">Monitor Solution</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -359,21 +351,9 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-count">1</span>
           <span class="site-state-item-name">文章</span>
         </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">1</span>
-        <span class="site-state-item-name">分類</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">4</span>
-        <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
 </div>
